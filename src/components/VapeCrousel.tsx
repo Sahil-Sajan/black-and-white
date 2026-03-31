@@ -11,11 +11,12 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-type Category = 'Starter Kits' | 'Pod Devices' | 'Disposable Device';
+type Category = 'Disposable Device' | 'Pod Devices' | 'Starter Kits';
 
 const VapesCarousel = () => {
-    const [activeTab, setActiveTab] = useState<Category>('Starter Kits');
-    const categories: Category[] = ['Starter Kits', 'Pod Devices', 'Disposable Device'];
+    // Updated category order: Disposable first, then Pods/Starter Kits
+    const categories: Category[] = ['Disposable Device', 'Pod Devices', 'Starter Kits'];
+    const [activeTab, setActiveTab] = useState<Category>('Disposable Device');
 
     const products = [
         { id: 'vape', brand: 'OXVA', name: 'OXVA XLIM PRO STARTER KIT', price: '6,499', oldPrice: '7,499', category: 'Starter Kits', img: '/vape.avif' },
@@ -30,13 +31,18 @@ const VapesCarousel = () => {
         { id: 3, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE GRAPE PE...', price: '3,599', oldPrice: '3,999', category: 'Disposable Device', img: '/cards/card3.jpg' },
         { id: 4, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE BLUERAZZ...', price: '3,599', oldPrice: '3,999', category: 'Disposable Device', img: '/cards/card4.jpg' },
         { id: 5, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE WATERME...', price: '3,599', oldPrice: '3,999', category: 'Disposable Device', img: '/cards/card5.webp' },
+        { id: 1, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE MANGO S...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/vape.avif' },
+        { id: 2, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE BLUEBERR...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/vape4.avif' },
+        { id: 3, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE GRAPE PE...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/vape2.avif' },
+        { id: 4, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE BLUERAZZ...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/cards/card3.jpg' },
+        { id: 5, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE WATERME...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/cards/card5.webp' },
     ];
 
     const filteredProducts = products.filter(p => p.category === activeTab);
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-6 md:py-10 font-sans group">
-            {/* Header & Filter - Mobile: Stacked, Desktop: Row */}
+            {/* Header & Filter */}
             <div className="flex flex-col md:flex-row justify-between items-center border-b border-gray-200 mb-6 md:mb-8 pb-2">
                 <h2 className="text-xl md:text-2xl font-bold text-gray-800 uppercase tracking-tight">Vapes</h2>
                 <div className="flex flex-wrap justify-center gap-2 md:gap-4 mt-4 md:mt-0">
@@ -59,14 +65,15 @@ const VapesCarousel = () => {
             <div className="relative px-2 md:px-8">
                 <Swiper
                     modules={[Navigation, Pagination]}
-                    spaceBetween={10} // Tighter for mobile
-                    slidesPerView={1.2} // Partial view on mobile to indicate scroll
+                    spaceBetween={10}
+                    slidesPerView={1} // Only one card visible on mobile
                     navigation={{
                         nextEl: '.swiper-button-next-custom',
                         prevEl: '.swiper-button-prev-custom',
                     }}
                     pagination={{ clickable: true, el: '.custom-pagination' }}
                     breakpoints={{
+                        // Desktop styling remains untouched
                         480: { slidesPerView: 2, spaceBetween: 15 },
                         768: { slidesPerView: 3, spaceBetween: 20 },
                         1024: { slidesPerView: 4, spaceBetween: 20 },
@@ -87,7 +94,7 @@ const VapesCarousel = () => {
                                         className="object-contain transition-transform duration-500 md:group-hover/card:scale-110 p-4"
                                     />
 
-                                    {/* Hover Actions (Transparent BG + Backdrop Blur) */}
+                                    {/* Hover Actions */}
                                     <div className="absolute inset-0 flex items-end justify-center pb-4 translate-y-4 opacity-0 md:group-hover/card:opacity-100 md:group-hover/card:translate-y-0 transition-all duration-300 bg-white/30 backdrop-blur-[2px] z-10">
                                         <div className="flex gap-2">
                                             <button className="flex items-center gap-1 text-[9px] font-bold text-gray-800 bg-white/90 px-2 py-1.5 rounded-sm shadow-sm hover:bg-black hover:text-white transition-colors">
@@ -117,7 +124,7 @@ const VapesCarousel = () => {
                     ))}
                 </Swiper>
 
-                {/* Navigation Arrows - Hidden on Mobile */}
+                {/* Navigation Arrows */}
                 <button className="swiper-button-prev-custom hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 text-gray-400 hover:text-black transition-colors">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
                 </button>

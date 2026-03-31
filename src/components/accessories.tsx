@@ -11,11 +11,11 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-type Category = 'Starter Kits' | 'Pod Devices' | 'Disposable Device';
+type Category = 'Starter Kits';
 
 const AccessoriesCarousel = () => {
     const [activeTab, setActiveTab] = useState<Category>('Starter Kits');
-    const categories: Category[] = ['Starter Kits', 'Pod Devices', 'Disposable Device'];
+    const categories: Category[] = ['Starter Kits'];
 
     const products = [
         { id: 'vape', brand: 'OXVA', name: 'OXVA XLIM PRO STARTER KIT', price: '6,499', oldPrice: '7,499', category: 'Starter Kits', img: '/vape.avif' },

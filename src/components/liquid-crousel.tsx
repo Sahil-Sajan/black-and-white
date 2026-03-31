@@ -23,11 +23,36 @@ const LiquidCarousel = () => {
         { id: 'l3', brand: 'NASTY', name: 'NASTY JUICE BAD BLOOD 30MG', price: '2,899', oldPrice: '3,299', category: '30mg', img: '/liquid33.webp' },
         { id: 'l4', brand: 'DINNER LADY', name: 'LEMON TART 30MG', price: '3,299', oldPrice: '3,799', category: '30mg', img: '/liquid44.avif' },
         { id: 'l5', brand: 'BLVK', name: 'BLVK UNICORN APPLE 30MG', price: '2,999', oldPrice: '3,399', category: '30mg', img: '/liquid55.avif' },
+        
         { id: 'l6', brand: 'VAPETASIA', name: 'VAPETASIA KILLER KUSTARD 40MG', price: '3,199', oldPrice: '3,699', category: '40mg', img: '/liquid22.webp' },
         { id: 'l7', brand: 'NASTY', name: 'NASTY JUICE BAD BLOOD 40MG', price: '2,899', oldPrice: '3,299', category: '40mg', img: '/liquid33.webp' },
         { id: 'l8', brand: 'DINNER LADY', name: 'LEMON TART 40MG', price: '3,299', oldPrice: '3,799', category: '40mg', img: '/liquid44.avif' },
         { id: 'l9', brand: 'BLVK', name: 'BLVK UNICORN APPLE 40MG', price: '2,999', oldPrice: '3,399', category: '40mg', img: '/liquid55.avif' },
         { id: 'l10', brand: 'SLUGGER', name: 'SLUGGER BLUE RASPBERRY 40MG', price: '2,999', oldPrice: '3,499', category: '40mg', img: '/liquid11.avif' },
+
+        { id: 'l11', brand: 'NASTY', name: 'NASTY JUICE BAD BLOOD 50MG', price: '2,899', oldPrice: '3,299', category: '50mg', img: '/liquid33.webp' },
+        { id: 'l12', brand: 'SLUGGER', name: 'SLUGGER BLUE RASPBERRY 50MG', price: '2,999', oldPrice: '3,499', category: '50mg', img: '/liquid11.avif' },
+        { id: 'l13', brand: 'DINNER LADY', name: 'LEMON TART 50MG', price: '3,299', oldPrice: '3,799', category: '50mg', img: '/liquid44.avif' },
+        { id: 'l14', brand: 'BLVK', name: 'BLVK UNICORN APPLE 50MG', price: '2,999', oldPrice: '3,399', category: '50mg', img: '/liquid55.avif' },
+        { id: 'l15', brand: 'VAPETASIA', name: 'VAPETASIA KILLER KUSTARD 50MG', price: '3,199', oldPrice: '3,699', category: '50mg', img: '/liquid22.webp' },
+
+        { id: 'l16', brand: 'DINNER LADY', name: 'LEMON TART 60MG', price: '3,299', oldPrice: '3,799', category: '60mg', img: '/liquid44.avif' },
+        { id: 'l17', brand: 'BLVK', name: 'BLVK UNICORN APPLE 60MG', price: '2,999', oldPrice: '3,399', category: '60mg', img: '/liquid55.avif' },
+        { id: 'l18', brand: 'VAPETASIA', name: 'VAPETASIA KILLER KUSTARD 60MG', price: '3,199', oldPrice: '3,699', category: '60mg', img: '/liquid22.webp' },
+        { id: 'l19', brand: 'NASTY', name: 'NASTY JUICE BAD BLOOD 60MG', price: '2,899', oldPrice: '3,299', category: '60mg', img: '/liquid33.webp' },
+        { id: 'l20', brand: 'SLUGGER', name: 'SLUGGER BLUE RASPBERRY 60MG', price: '2,999', oldPrice: '3,499', category: '60mg', img: '/liquid11.avif' },
+
+        { id: 'l21', brand: 'BLVK', name: 'BLVK UNICORN APPLE 70MG', price: '2,999', oldPrice: '3,399', category: '70mg', img: '/liquid55.avif' },
+        { id: 'l22', brand: 'VAPETASIA', name: 'VAPETASIA KILLER KUSTARD 70MG', price: '3,199', oldPrice: '3,699', category: '70mg', img: '/liquid22.webp' },
+        { id: 'l23', brand: 'NASTY', name: 'NASTY JUICE BAD BLOOD 70MG', price: '2,899', oldPrice: '3,299', category: '70mg', img: '/liquid33.webp' },
+        { id: 'l24', brand: 'SLUGGER', name: 'SLUGGER BLUE RASPBERRY 70MG', price: '2,999', oldPrice: '3,499', category: '70mg', img: '/liquid11.avif' },
+        { id: 'l25', brand: 'DINNER LADY', name: 'LEMON TART 70MG', price: '3,299', oldPrice: '3,799', category: '70mg', img: '/liquid44.avif' },
+
+        { id: 'l26', brand: 'VAPETASIA', name: 'VAPETASIA KILLER KUSTARD 100MG', price: '3,199', oldPrice: '3,699', category: '100mg', img: '/liquid22.webp' },
+        { id: 'l27', brand: 'NASTY', name: 'NASTY JUICE BAD BLOOD 100MG', price: '2,899', oldPrice: '3,299', category: '100mg', img: '/liquid33.webp' },
+        { id: 'l28', brand: 'SLUGGER', name: 'SLUGGER BLUE RASPBERRY 100MG', price: '2,999', oldPrice: '3,499', category: '100mg', img: '/liquid11.avif' },
+        { id: 'l29', brand: 'DINNER LADY', name: 'LEMON TART 100MG', price: '3,299', oldPrice: '3,799', category: '100mg', img: '/liquid44.avif' },
+        { id: 'l30', brand: 'BLVK', name: 'BLVK UNICORN APPLE 100MG', price: '2,999', oldPrice: '3,399', category: '100mg', img: '/liquid55.avif' },
     ];
 
     const filteredProducts = products.filter(p => p.category === activeTab);
