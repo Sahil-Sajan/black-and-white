@@ -1,10 +1,16 @@
+// app/page.tsx
 import NicotineWarningMarquee from "./components/Banner";
 import Navbar from "./components/Navbar";
 import HeroSlider from "./components/Crousel";
-import CategoryGrid from "./components/categories";
+
+
 import ProductGrid from "./components/cards";
 import BrandMarquee from "./components/Brands";
 import NewArrivals from "./components/testimonial";
+import ProductSection from "./components/categories";
+import DeliveryBanner from "./components/Banner";
+import VapesCarousel from "./components/VapeCrousel";
+import LiquidCarousel from "./components/liquid-crousel";
 
 
 export default function Home() {
@@ -13,11 +19,15 @@ export default function Home() {
       <NicotineWarningMarquee />
 
       <HeroSlider />
-      <CategoryGrid />
-      <ProductGrid />
+      <ProductSection />
+
+
+      {/* <ProductGrid /> */}
+      <DeliveryBanner />
       <BrandMarquee />
-      <NewArrivals />
-      {/* <TestimonialSection /> */}
+      <VapesCarousel />
+      <LiquidCarousel />
+      {/* <NewArrivals /> */}
     </>
   );
 }
