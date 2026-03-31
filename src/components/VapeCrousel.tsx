@@ -14,7 +14,6 @@ import 'swiper/css/pagination';
 type Category = 'Disposable Device' | 'Pod Devices' | 'Starter Kits';
 
 const VapesCarousel = () => {
-    // Updated category order: Disposable first, then Pods/Starter Kits
     const categories: Category[] = ['Disposable Device', 'Pod Devices', 'Starter Kits'];
     const [activeTab, setActiveTab] = useState<Category>('Disposable Device');
 
@@ -31,11 +30,11 @@ const VapesCarousel = () => {
         { id: 3, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE GRAPE PE...', price: '3,599', oldPrice: '3,999', category: 'Disposable Device', img: '/cards/card3.jpg' },
         { id: 4, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE BLUERAZZ...', price: '3,599', oldPrice: '3,999', category: 'Disposable Device', img: '/cards/card4.jpg' },
         { id: 5, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE WATERME...', price: '3,599', oldPrice: '3,999', category: 'Disposable Device', img: '/cards/card5.webp' },
-        { id: 1, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE MANGO S...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/vape.avif' },
-        { id: 2, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE BLUEBERR...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/vape4.avif' },
-        { id: 3, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE GRAPE PE...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/vape2.avif' },
-        { id: 4, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE BLUERAZZ...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/cards/card3.jpg' },
-        { id: 5, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE WATERME...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/cards/card5.webp' },
+        { id: 'pod1', brand: 'SLUGGER', name: 'SLUGGER POD MANGO S...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/vape.avif' },
+        { id: 'pod2', brand: 'SLUGGER', name: 'SLUGGER POD BLUEBERR...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/vape4.avif' },
+        { id: 'pod3', brand: 'SLUGGER', name: 'SLUGGER POD GRAPE PE...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/vape2.avif' },
+        { id: 'pod4', brand: 'SLUGGER', name: 'SLUGGER POD BLUERAZZ...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/cards/card3.jpg' },
+        { id: 'pod5', brand: 'SLUGGER', name: 'SLUGGER POD WATERME...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/cards/card5.webp' },
     ];
 
     const filteredProducts = products.filter(p => p.category === activeTab);
@@ -66,15 +65,15 @@ const VapesCarousel = () => {
                 <Swiper
                     modules={[Navigation, Pagination]}
                     spaceBetween={10}
-                    slidesPerView={1} // Only one card visible on mobile
+                    slidesPerView={1} // Base setting for mobile
                     navigation={{
                         nextEl: '.swiper-button-next-custom',
                         prevEl: '.swiper-button-prev-custom',
                     }}
                     pagination={{ clickable: true, el: '.custom-pagination' }}
                     breakpoints={{
-                        // Desktop styling remains untouched
-                        480: { slidesPerView: 2, spaceBetween: 15 },
+                        // Changed 480 to 640 to keep single card on small/medium mobile phones
+                        640: { slidesPerView: 2, spaceBetween: 15 },
                         768: { slidesPerView: 3, spaceBetween: 20 },
                         1024: { slidesPerView: 4, spaceBetween: 20 },
                         1280: { slidesPerView: 5, spaceBetween: 20 },
@@ -84,8 +83,6 @@ const VapesCarousel = () => {
                     {filteredProducts.map((product) => (
                         <SwiperSlide key={product.id}>
                             <div className="bg-white p-2 border border-transparent md:hover:border-gray-100 md:hover:shadow-lg transition-all duration-300 group/card relative rounded-sm h-full flex flex-col">
-
-                                {/* Image Container */}
                                 <div className="aspect-square mb-3 md:mb-4 relative flex items-center justify-center bg-[#f9f9f9] rounded-sm overflow-hidden">
                                     <Image
                                         src={product.img}
@@ -93,8 +90,6 @@ const VapesCarousel = () => {
                                         fill
                                         className="object-contain transition-transform duration-500 md:group-hover/card:scale-110 p-4"
                                     />
-
-                                    {/* Hover Actions */}
                                     <div className="absolute inset-0 flex items-end justify-center pb-4 translate-y-4 opacity-0 md:group-hover/card:opacity-100 md:group-hover/card:translate-y-0 transition-all duration-300 bg-white/30 backdrop-blur-[2px] z-10">
                                         <div className="flex gap-2">
                                             <button className="flex items-center gap-1 text-[9px] font-bold text-gray-800 bg-white/90 px-2 py-1.5 rounded-sm shadow-sm hover:bg-black hover:text-white transition-colors">
@@ -107,13 +102,11 @@ const VapesCarousel = () => {
                                     </div>
                                 </div>
 
-                                {/* Product Info */}
                                 <div className="mt-2 text-center pb-2">
                                     <p className="text-[8px] md:text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">{product.brand}</p>
                                     <h3 className="text-[10px] md:text-[11px] font-bold text-gray-800 uppercase leading-tight h-8 mb-2 px-1">
                                         {product.name}
                                     </h3>
-
                                     <div className="flex items-baseline justify-center gap-2">
                                         <span className="text-black font-bold text-xs md:text-sm">Rs.{product.price}</span>
                                         <span className="text-gray-400 line-through text-[9px] md:text-[10px]">Rs.{product.oldPrice}</span>
@@ -124,7 +117,6 @@ const VapesCarousel = () => {
                     ))}
                 </Swiper>
 
-                {/* Navigation Arrows */}
                 <button className="swiper-button-prev-custom hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 text-gray-400 hover:text-black transition-colors">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
                 </button>
@@ -133,7 +125,6 @@ const VapesCarousel = () => {
                 </button>
             </div>
 
-            {/* Footer */}
             <div className="flex flex-col items-center mt-4 md:mt-8 gap-4">
                 <div className="custom-pagination flex justify-center"></div>
                 <button className="bg-black text-white px-8 md:px-10 py-2.5 md:py-3 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors">

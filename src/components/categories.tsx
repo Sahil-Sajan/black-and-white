@@ -65,7 +65,7 @@ const ProductSection = () => {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`pb-2 text-[10px] md:text-sm font-bold uppercase tracking-wider transition-all relative ${activeTab === tab
-                    ? "text-black after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-green-500"
+                    ? "text-black after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-black"
                     : "text-gray-400 hover:text-gray-600"
                     }`}
                 >
@@ -85,7 +85,7 @@ const ProductSection = () => {
                     alt="Product"
                     className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform p-2"
                   />
-                  <span className="absolute top-2 left-2 bg-green-500 text-white text-[9px] md:text-[10px] px-2 py-0.5 rounded-full">
+                  <span className="absolute top-2 left-2 bg-black text-white text-[9px] md:text-[10px] px-2 py-0.5 rounded-full">
                     -10%
                   </span>
                 </div>
@@ -96,7 +96,7 @@ const ProductSection = () => {
                   Product Title Example {item}
                 </h3>
                 <div className="mt-2 flex flex-wrap items-baseline gap-1">
-                  <p className="text-green-600 font-bold text-xs md:text-sm">
+                  <p className="text-black font-bold text-xs md:text-sm">
                     Rs. 4,299
                   </p>
                   <span className="text-gray-400 line-through text-[9px] md:text-[10px] font-normal">
