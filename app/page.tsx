@@ -1,17 +1,15 @@
 // app/page.tsx
-import NicotineWarningMarquee from "./components/Banner";
-import Navbar from "./components/Navbar";
-import HeroSlider from "./components/Crousel";
+import NicotineWarningMarquee from "../src/components/Banner";
+import Navbar from "../src/components/Navbar";
+import HeroSlider from "../src/components/Crousel";
 
-
-import ProductGrid from "./components/cards";
-import BrandMarquee from "./components/Brands";
-import NewArrivals from "./components/testimonial";
-import ProductSection from "./components/categories";
-import DeliveryBanner from "./components/Banner";
-import VapesCarousel from "./components/VapeCrousel";
-import LiquidCarousel from "./components/liquid-crousel";
-
+import ProductGrid from "../src/components/cards";
+import BrandMarquee from "../src/components/Brands";
+import NewArrivals from "../src/components/testimonial";
+import ProductSection from "../src/components/categories";
+import DeliveryBanner from "../src/components/Banner";
+import VapesCarousel from "../src/components/VapeCrousel";
+import LiquidCarousel from "../src/components/liquid-crousel";
 
 export default function Home() {
   return (
@@ -20,7 +18,6 @@ export default function Home() {
 
       <HeroSlider />
       <ProductSection />
-
 
       {/* <ProductGrid /> */}
       <DeliveryBanner />
