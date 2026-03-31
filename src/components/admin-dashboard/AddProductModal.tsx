@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
+import Image from 'next/image';
 import { X, UploadCloud, Image as ImageIcon } from 'lucide-react';
 
 interface AddProductModalProps {
@@ -92,7 +93,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({ isOpen, onClose, onAd
                             >
                                 {imagePreview ? (
                                     <div className="relative w-32 h-32 rounded-xl overflow-hidden shadow-sm bg-white border border-slate-200">
-                                        <img src={imagePreview} alt="Preview" className="w-full h-full object-contain p-2" />
+                                        <Image src={imagePreview} alt="Preview" fill className="object-contain p-2" unoptimized />
                                     </div>
                                 ) : (
                                     <>

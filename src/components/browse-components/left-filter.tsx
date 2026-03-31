@@ -30,7 +30,7 @@ const FilterSection = ({
             </button>
 
             {isOpen && options && (
-                <div className="mt-5 space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="mt-5 space-y-3 max-h-60 overflow-y-auto pr-2 no-scrollbar animate-in fade-in slide-in-from-top-1 duration-200">
                     {options.map((opt) => (
                         <label key={opt} className="flex items-center gap-3 cursor-pointer group">
                             <input
@@ -102,7 +102,7 @@ export const ProductSidebar = () => {
                         </button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto px-5 pb-10 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto px-5 pb-10 no-scrollbar">
                         <FilterContent />
                     </div>
 
@@ -118,19 +118,16 @@ export const ProductSidebar = () => {
             </div>
 
             {/* --- DESKTOP SIDEBAR --- */}
-            <aside className="w-64 flex-shrink-0 hidden lg:block sticky top-8 h-fit self-start overflow-y-auto max-h-[calc(100vh-4rem)] pr-4 custom-scrollbar">
+            <aside className="w-64 flex-shrink-0 hidden lg:block sticky top-8 h-fit self-start overflow-y-auto max-h-[calc(100vh-4rem)] pr-4 no-scrollbar">
                 <FilterContent />
 
                 <style jsx global>{`
-                    .custom-scrollbar::-webkit-scrollbar {
-                        width: 4px;
+                    .no-scrollbar::-webkit-scrollbar {
+                        display: none;
                     }
-                    .custom-scrollbar::-webkit-scrollbar-track {
-                        background: #f4f4f5;
-                    }
-                    .custom-scrollbar::-webkit-scrollbar-thumb {
-                        background: #d4d4d8;
-                        border-radius: 10px;
+                    .no-scrollbar {
+                        -ms-overflow-style: none;  /* IE and Edge */
+                        scrollbar-width: none;  /* Firefox */
                     }
                 `}</style>
             </aside>

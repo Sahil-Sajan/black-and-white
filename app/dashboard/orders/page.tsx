@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import {
     Download,
     ChevronDown,
@@ -11,7 +12,8 @@ import {
     BarChart2,
     Clock,
     Star,
-    CreditCard
+    CreditCard,
+    MoreVertical
 } from 'lucide-react';
 
 const ORDERS_DATA = [
@@ -76,11 +78,10 @@ const OrderManagementPage = () => {
     };
 
     return (
-        /* Updated width to 11/12 (91.66%) on desktop */
         <div className="w-full lg:max-w-[91.66%] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:pb-10 transition-all duration-300">
 
             {/* Header Section */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 mb-8 sm:mb-12">
+            <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 mb-8 sm:mb-10">
                 <div className="space-y-1">
                     <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">Order Management</h1>
                     <p className="text-sm sm:text-base font-medium text-slate-500">Real-time overview of your marketplace sales and logistics.</p>
@@ -90,12 +91,20 @@ const OrderManagementPage = () => {
                 </button>
             </div>
 
+            {/* --- TOP SUMMARY CARDS (Shifted Upwards) --- */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
+                <SummaryCard title="TODAY'S REVENUE" value="$4,290.00" subtext="+12.5% vs yesterday" icon={<TrendingUp size={20} />} color="emerald" />
+                <SummaryCard title="AVERAGE ORDER" value="$68.50" subtext="Stable vs last week" icon={<BarChart2 size={20} />} color="blue" />
+                <SummaryCard title="PENDING ORDERS" value="12" subtext="Immediate action" icon={<Clock size={20} />} color="amber" />
+                <SummaryCard title="TOP CATEGORY" value="Disposables" subtext="42% of total sales" icon={<Star size={20} />} color="purple" />
+            </div>
+
             {/* Main Content Area */}
-            <div className="bg-white border border-slate-200 rounded-2xl sm:rounded-[2.5rem] shadow-sm mb-10 overflow-hidden">
+            <div className="bg-white md:border border-slate-200 rounded-2xl md:rounded-[2.5rem] shadow-sm mb-10 overflow-hidden">
 
                 {/* Tabs & Filters */}
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between border-b border-slate-100 px-6 sm:px-8 py-0 gap-4">
-                    <div className="flex gap-8 overflow-x-auto w-full pt-5 lg:pt-0 scrollbar-hide">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between border-b border-slate-100 px-0 md:px-8 py-0 gap-4">
+                    <div className="flex gap-8 overflow-x-auto w-full pt-5 lg:pt-0 hide-scrollbar px-4 md:px-0">
                         {tabs.map((tab) => {
                             const isActive = activeTab === tab.name;
                             return (
@@ -113,7 +122,7 @@ const OrderManagementPage = () => {
                         })}
                     </div>
 
-                    <div className="flex items-center gap-4 lg:h-16 lg:pl-8 lg:border-l border-slate-100 self-end lg:self-auto shrink-0 py-4 lg:py-0">
+                    <div className="flex items-center gap-4 lg:h-16 lg:pl-8 lg:border-l border-slate-100 self-end lg:self-auto shrink-0 py-4 lg:py-0 px-4 md:px-0">
                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Sort By</span>
                         <button className="flex items-center gap-2 text-sm font-bold text-slate-700 group">
                             Latest <ChevronDown size={14} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
@@ -121,8 +130,51 @@ const OrderManagementPage = () => {
                     </div>
                 </div>
 
-                {/* Table */}
-                <div className="w-full overflow-x-auto">
+                {/* --- LISTING AREA --- */}
+
+                {/* 1. MOBILE CARD VIEW (md:hidden) */}
+                <div className="grid grid-cols-1 gap-4 md:hidden mt-4">
+                    {ORDERS_DATA.map((order) => (
+                        <div key={order.id} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="text-xs font-bold text-blue-600">#{order.id}</span>
+                                <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${getStatusStyles(order.status)}`}>
+                                    {order.status}
+                                </span>
+                            </div>
+
+                            <div className="flex items-center gap-3 mb-6">
+                                {order.avatar ? (
+                                    <div className="relative w-10 h-10">
+                                        <Image src={order.avatar} alt={order.customer} fill className="rounded-full object-cover" unoptimized />
+                                    </div>
+                                ) : (
+                                    <div className="w-10 h-10 rounded-full bg-slate-50 text-slate-600 flex items-center justify-center text-xs font-black border border-slate-100">
+                                        {order.initials}
+                                    </div>
+                                )}
+                                <div>
+                                    <p className="text-sm font-black text-slate-800">{order.customer}</p>
+                                    <p className="text-[11px] font-medium text-slate-400">{order.date}</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-4 border-t border-slate-50">
+                                <div>
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Amount</p>
+                                    <p className="text-base font-black text-slate-900">${order.amount.toFixed(2)}</p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button className="p-2 bg-slate-50 rounded-lg text-slate-400"><Eye size={18} /></button>
+                                    <button className="p-2 bg-slate-50 rounded-lg text-slate-400"><MoreVertical size={18} /></button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* 2. DESKTOP TABLE VIEW (hidden md:block) */}
+                <div className="hidden md:block w-full overflow-x-auto hide-scrollbar">
                     <table className="w-full text-left whitespace-nowrap">
                         <thead className="border-b border-slate-100 bg-slate-50/30">
                             <tr>
@@ -144,7 +196,9 @@ const OrderManagementPage = () => {
                                     <td className="py-6 px-8">
                                         <div className="flex items-center gap-3">
                                             {order.avatar ? (
-                                                <img src={order.avatar} alt={order.customer} className="w-9 h-9 rounded-full object-cover ring-2 ring-slate-100" />
+                                                <div className="relative w-9 h-9">
+                                                    <Image src={order.avatar} alt={order.customer} fill className="rounded-full object-cover ring-2 ring-slate-100" unoptimized />
+                                                </div>
                                             ) : (
                                                 <div className="w-9 h-9 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-black border border-slate-200">
                                                     {order.initials}
@@ -187,26 +241,17 @@ const OrderManagementPage = () => {
                 <div className="px-8 py-6 flex flex-col sm:flex-row items-center justify-between border-t border-slate-100 gap-4 bg-slate-50/20">
                     <p className="text-xs sm:text-[13px] font-bold text-slate-400 uppercase tracking-wider">Showing 1-10 of 2,451</p>
                     <div className="flex items-center gap-2">
-                        <button className="px-4 py-2 rounded-xl text-sm font-bold text-slate-600 border border-slate-200 hover:bg-white hover:shadow-sm transition-all">Prev</button>
-                        <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-900 text-white font-bold text-sm shadow-lg shadow-slate-200">1</button>
-                        <button className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-500 font-bold hover:bg-white hover:border-slate-200 border border-transparent transition-all">2</button>
-                        <button className="px-4 py-2 rounded-xl text-sm font-bold text-slate-600 border border-slate-200 hover:bg-white hover:shadow-sm transition-all">Next</button>
+                        <button className="px-4 py-2 rounded-xl text-sm font-bold text-slate-600 border border-slate-200 hover:bg-white transition-all">Prev</button>
+                        <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-900 text-white font-bold text-sm">1</button>
+                        <button className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-500 font-bold border border-transparent">2</button>
+                        <button className="px-4 py-2 rounded-xl text-sm font-bold text-slate-600 border border-slate-200 hover:bg-white transition-all">Next</button>
                     </div>
                 </div>
-            </div>
-
-            {/* Bottom Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <SummaryCard title="TODAY'S REVENUE" value="$4,290.00" subtext="+12.5% vs yesterday" icon={<TrendingUp size={20} />} color="emerald" />
-                <SummaryCard title="AVERAGE ORDER" value="$68.50" subtext="Stable vs last week" icon={<BarChart2 size={20} />} color="blue" />
-                <SummaryCard title="PENDING ORDERS" value="12" subtext="Immediate action" icon={<Clock size={20} />} color="amber" />
-                <SummaryCard title="TOP CATEGORY" value="Disposables" subtext="42% of total sales" icon={<Star size={20} />} color="purple" />
             </div>
         </div>
     );
 };
 
-// Internal Component for Cleanliness
 const SummaryCard = ({ title, value, subtext, icon, color }: any) => {
     const colors: any = {
         emerald: "bg-emerald-50 text-emerald-500",
@@ -216,14 +261,14 @@ const SummaryCard = ({ title, value, subtext, icon, color }: any) => {
     };
 
     return (
-        <div className="bg-white rounded-[2rem] p-8 border border-slate-200 shadow-sm transition-all hover:shadow-md group">
+        <div className="bg-white rounded-2xl md:rounded-[2rem] p-6 md:p-8 border border-slate-200 shadow-sm transition-all hover:shadow-md group">
             <div className="flex justify-between items-start mb-6">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 leading-tight">{title}</p>
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 ${colors[color]}`}>
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 ${colors[color]}`}>
                     {icon}
                 </div>
             </div>
-            <p className="text-3xl font-black text-slate-900 mb-2">{value}</p>
+            <p className="text-2xl md:text-3xl font-black text-slate-900 mb-2">{value}</p>
             <p className={`text-[11px] font-bold ${color === 'emerald' ? 'text-emerald-500' : 'text-slate-400'}`}>{subtext}</p>
         </div>
     );

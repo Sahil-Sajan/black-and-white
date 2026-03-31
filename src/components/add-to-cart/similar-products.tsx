@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 const SimilarProducts = () => {
     const products = [
@@ -23,8 +24,8 @@ const SimilarProducts = () => {
                 {products.map((product) => (
                     <div key={product.id} className="group flex flex-col items-center text-center">
                         <div className="relative aspect-square w-full bg-[#f9f9f9] mb-4 overflow-hidden border border-zinc-100">
-                            <span className="absolute top-2 right-2 text-[8px] font-bold uppercase text-[#00a896] border border-[#00a896] px-1 bg-white">New</span>
-                            <img src={product.image} alt={product.name} className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-110" />
+                            <span className="absolute top-2 right-2 text-[8px] font-bold uppercase text-[#00a896] border border-[#00a896] px-1 bg-white z-10">New</span>
+                            <Image src={product.image} alt={product.name} fill className="object-contain p-4 transition-transform duration-500 group-hover:scale-110" />
                         </div>
                         <h3 className="text-[12px] font-bold text-zinc-800 uppercase tracking-tight line-clamp-2 px-2 h-8">{product.name}</h3>
                         <p className="mt-2 text-[14px] font-black text-black">${product.price.toFixed(2)}</p>

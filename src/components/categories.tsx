@@ -15,22 +15,24 @@ const ProductSection = () => {
   return (
     <div className="max-w-7xl mx-auto p-4 font-sans">
       {/* Main Outer Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-        {/* Left Large Image Section */}
-        <div className="md:col-span-4">
-          <div className="h-[500px] md:h-[580px] overflow-hidden rounded-sm sticky top-4">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8">
+
+        {/* Left Large Image Section - HIDDEN ON MOBILE */}
+        <div className="hidden md:block md:col-span-4">
+          <div className="h-[660px] overflow-hidden rounded-sm sticky top-4 bg-[#f9f9f9]">
             <img
               src="/categories/hh.jpg"
               alt="Promo Left"
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
             />
           </div>
         </div>
-        {/* Right Content Column (The Wrapper you needed) */}
-        <div className="md:col-span-8">
+
+        {/* Right Content Column - FULL WIDTH ON MOBILE */}
+        <div className="col-span-12 md:col-span-8">
           {/* Top Row: 3 Banners */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
-            <div className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center">
+            <div className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center aspect-[16/9] sm:aspect-auto">
               <img
                 src="/categories/disposible2.jpg"
                 alt="Disposable Vape"
@@ -38,7 +40,7 @@ const ProductSection = () => {
               />
             </div>
 
-            <div className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center">
+            <div className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center aspect-[16/9] sm:aspect-auto">
               <img
                 src="/categories/liquid1.jpg"
                 alt="E-Liquid"
@@ -46,7 +48,7 @@ const ProductSection = () => {
               />
             </div>
 
-            <div className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center">
+            <div className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center aspect-[16/9] sm:aspect-auto">
               <img
                 src="/categories/sss.jpg"
                 alt="Starter Kits"
@@ -56,17 +58,16 @@ const ProductSection = () => {
           </div>
 
           {/* Filter Header Area */}
-          <div className="mb-8">
-            <div className="flex justify-center space-x-8 border-b border-gray-200">
+          <div className="mb-8 overflow-x-auto no-scrollbar">
+            <div className="flex justify-center space-x-6 md:space-x-8 border-b border-gray-200 min-w-max md:min-w-0">
               {categories.map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`pb-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-all relative ${
-                    activeTab === tab
-                      ? "text-black after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-green-500"
-                      : "text-gray-400 hover:text-gray-600"
-                  }`}
+                  className={`pb-2 text-[10px] md:text-sm font-bold uppercase tracking-wider transition-all relative ${activeTab === tab
+                    ? "text-black after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-green-500"
+                    : "text-gray-400 hover:text-gray-600"
+                    }`}
                 >
                   {tab}
                 </button>
@@ -75,7 +76,7 @@ const ProductSection = () => {
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {[1, 2, 3, 4].map((item) => (
               <div key={item} className="group cursor-pointer">
                 <div className="aspect-[4/5] bg-white mb-3 overflow-hidden rounded-sm relative border border-gray-100">
@@ -84,27 +85,28 @@ const ProductSection = () => {
                     alt="Product"
                     className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform p-2"
                   />
-                  <span className="absolute top-2 left-2 bg-green-500 text-white text-[10px] px-2 py-1 rounded-full">
+                  <span className="absolute top-2 left-2 bg-green-500 text-white text-[9px] md:text-[10px] px-2 py-0.5 rounded-full">
                     -10%
                   </span>
                 </div>
-                <p className="text-[10px] text-gray-400 uppercase">
+                <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-medium">
                   Brand Name
                 </p>
-                <h3 className="text-[11px] font-bold uppercase mt-1 leading-tight">
+                <h3 className="text-[10px] md:text-[11px] font-bold uppercase mt-1 leading-tight line-clamp-2">
                   Product Title Example {item}
                 </h3>
-                <p className="text-green-600 font-bold mt-2 text-sm">
-                  Rs. 4,299
-                  <span className="text-gray-400 line-through text-[10px] ml-1 font-normal">
+                <div className="mt-2 flex flex-wrap items-baseline gap-1">
+                  <p className="text-green-600 font-bold text-xs md:text-sm">
+                    Rs. 4,299
+                  </p>
+                  <span className="text-gray-400 line-through text-[9px] md:text-[10px] font-normal">
                     Rs. 4,799
                   </span>
-                </p>
+                </div>
               </div>
             ))}
           </div>
-        </div>{" "}
-        {/* End of Right Content Column */}
+        </div>
       </div>
     </div>
   );

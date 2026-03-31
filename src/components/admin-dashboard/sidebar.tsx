@@ -11,7 +11,6 @@ import {
     Wind,
     Menu,
     X,
-
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -55,10 +54,13 @@ const Sidebar = () => {
 
             {/* --- SIDEBAR --- */}
             <aside className={`
+                /* Mobile: Fixed overlay slider */
                 fixed inset-y-0 left-0 z-[70] w-[280px] bg-white border-r border-slate-100 flex flex-col
                 transition-transform duration-300 ease-in-out
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-                lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto
+
+                /* Desktop: Stick in place as a column */
+                lg:relative lg:inset-auto lg:z-10 lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto hide-scrollbar
             `}>
 
                 {/* Brand Header */}
@@ -116,8 +118,6 @@ const Sidebar = () => {
 
                 {/* Bottom Section */}
                 <div className="p-4 mt-auto space-y-1.5 border-t border-slate-50">
-
-
                     <div className="pt-4 text-center">
                         <p className="text-[9px] text-slate-300 font-bold uppercase tracking-[0.3em]">
                             v2.0.4 Sentinel Core
