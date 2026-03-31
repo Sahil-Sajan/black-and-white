@@ -117,7 +117,7 @@ const Navbar = () => {
             className="group relative block h-12 w-12 md:h-24 md:w-20 transition-transform duration-300 hover:scale-105"
           >
             <Image
-              src="/logo.jfif"
+              src="/logo.png"
               alt="Logo"
               fill
               className="object-contain"
