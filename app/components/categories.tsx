@@ -1,57 +1,102 @@
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+"use client"
 
-const categories = [
-    { id: 1, title: 'VAPES', image: '/categories/vapes.png', span: 'md:col-span-1' },
-    { id: 2, title: 'NIC SALTS', image: '/categories/nic-salts.png', span: 'md:col-span-2' },
-    { id: 3, title: 'STARTER KITS', image: '/categories/starter-kits.png', span: 'md:col-span-1' },
-    { id: 4, title: 'ACCESSORIES', image: '/categories/accessories.png', span: 'md:col-span-2' },
-    { id: 5, title: 'HEETS', image: '/categories/heets.png', span: 'md:col-span-1' },
-    { id: 6, title: 'E-LIQUIDS', image: '/categories/e-liquids.png', span: 'md:col-span-1' },
-];
+import React, { useState } from 'react';
 
-const CategoryGrid = () => {
+type Category = 'New Arrivals' | 'Best Selling' | 'Liquids/Flavors';
+
+const ProductSection = () => {
+    const [activeTab, setActiveTab] = useState<Category>('New Arrivals');
+    const categories: Category[] = ['New Arrivals', 'Best Selling', 'Liquids/Flavors'];
+
     return (
-        <section className="w-full md:w-11/12 mx-auto bg-white px-4 py-10 md:py-20">
-            {/* --- Heading --- */}
-            <div className="relative mb-10 md:mb-16 flex items-center justify-center">
-                <div className="absolute h-[1px] w-full bg-zinc-100"></div>
-                <div className="relative bg-white px-6 md:px-10 flex flex-col items-center">
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-red-600 mb-2 text-center">
-                        Browse our
-                    </span>
-                    <h2 className="text-xl md:text-3xl font-black uppercase tracking-tighter text-black text-center">
-                        Top Categories
-                    </h2>
-                </div>
-            </div>
+        <div className="max-w-7xl mx-auto p-4 font-sans">
+            {/* Main Outer Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
 
-            {/* --- Bento Grid --- */}
-            {/* grid-cols-2 on mobile ensures the images don't stretch to full-width/long blocks */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 auto-rows-[200px] md:auto-rows-[450px]">
-                {categories.map((cat) => (
-                    <Link
-                        key={cat.id}
-                        href="/collection"
-                        className={`group relative overflow-hidden bg-zinc-100 rounded-sm transition-all duration-700 ease-in-out hover:shadow-2xl ${cat.span}`}
-                    >
-                        <Image
-                            src={cat.image}
-                            alt={cat.title}
-                            fill
-                            priority
-                            className="object-cover object-center transition-transform duration-1000 ease-in-out group-hover:scale-110"
-                            sizes="(max-width: 768px) 50vw, 25vw"
+                {/* Left Large Image Section */}
+                <div className="md:col-span-4">
+                    <div className="h-[500px] md:h-[800px] overflow-hidden rounded-sm sticky top-4">
+                        <img
+                            src="/categories/hh.jpg"
+                            alt="Promo Left"
+                            className="w-full h-full object-cover"
                         />
+                    </div>
+                </div>
 
-                        {/* Text labels and overlays removed as requested */}
-                        <div className="absolute inset-0 bg-black/5 transition-opacity duration-500 group-hover:bg-transparent" />
-                    </Link>
-                ))}
+                {/* Right Content Column (The Wrapper you needed) */}
+                <div className="md:col-span-8">
+
+                    {/* Top Row: 3 Banners */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+                        <div className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center">
+                            <img
+                                src="/categories/disposible2.jpg"
+                                alt="Disposable Vape"
+                                className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
+                            />
+                        </div>
+
+                        <div className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center">
+                            <img
+                                src="/categories/liquid1.jpg"
+                                alt="E-Liquid"
+                                className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
+                            />
+                        </div>
+
+                        <div className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center">
+                            <img
+                                src="/categories/sss.jpg"
+                                alt="Starter Kits"
+                                className="w-full h-auto object-contain transition-transform duration-300 hover:scale-105"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Filter Header Area */}
+                    <div className="mb-8">
+                        <div className="flex justify-center space-x-8 border-b border-gray-200">
+                            {categories.map((tab) => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab)}
+                                    className={`pb-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-all relative ${activeTab === tab
+                                            ? "text-black after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-green-500"
+                                            : "text-gray-400 hover:text-gray-600"
+                                        }`}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Product Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {[1, 2, 3, 4].map((item) => (
+                            <div key={item} className="group cursor-pointer">
+                                <div className="aspect-[4/5] bg-white mb-3 overflow-hidden rounded-sm relative border border-gray-100">
+                                    <img
+                                        src={`/cards/card${item}.${item <= 2 ? 'webp' : 'jpg'}`}
+                                        alt="Product"
+                                        className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform p-2"
+                                    />
+                                    <span className="absolute top-2 left-2 bg-green-500 text-white text-[10px] px-2 py-1 rounded-full">-10%</span>
+                                </div>
+                                <p className="text-[10px] text-gray-400 uppercase">Brand Name</p>
+                                <h3 className="text-[11px] font-bold uppercase mt-1 leading-tight">Product Title Example {item}</h3>
+                                <p className="text-green-600 font-bold mt-2 text-sm">
+                                    Rs. 4,299
+                                    <span className="text-gray-400 line-through text-[10px] ml-1 font-normal">Rs. 4,799</span>
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div> {/* End of Right Content Column */}
             </div>
-        </section>
+        </div>
     );
 };
 
-export default CategoryGrid;
+export default ProductSection;
