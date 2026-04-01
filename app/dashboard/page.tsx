@@ -14,7 +14,7 @@ export default function DashboardPage() {
           title="Total Revenue"
           value="$45,231.89"
           icon={TrendingUp}
-          trend="+20.1% from last month"
+          // trend="+20.1% from last month"
           iconBgColor="bg-emerald-50"
           iconColor="text-emerald-600"
         />
@@ -23,7 +23,7 @@ export default function DashboardPage() {
           title="Subscriptions"
           value="+2,350"
           icon={Users}
-          trend="+180.1% from last month"
+          // trend="+180.1% from last month"
           iconBgColor="bg-blue-50"
           iconColor="text-blue-600"
         />
@@ -32,7 +32,7 @@ export default function DashboardPage() {
           title="Sales"
           value="+12,234"
           icon={CreditCard}
-          trend="+19% from last month"
+          // trend="+19% from last month"
           iconBgColor="bg-purple-50"
           iconColor="text-purple-600"
         />
@@ -41,7 +41,7 @@ export default function DashboardPage() {
           title="Active Now"
           value="+573"
           icon={Activity}
-          trend="+201 since last hour"
+          // trend="+201 since last hour"
           iconBgColor="bg-orange-50"
           iconColor="text-orange-600"
         />
