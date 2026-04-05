@@ -1,4 +1,4 @@
-# Product API Documentation
+# Black & White - Backend API Documentation
 
 This document outlines the available API endpoints for managing products in the application. All endpoints are relative to the base URL of your application (e.g., `http://localhost:3000/api`).
 
@@ -175,3 +175,98 @@ Retrieves product details using its SEO-friendly slug. Useful for public-facing 
 | :--- | :--- | :--- |
 | `name` | String | Variation or flavor name. |
 | `image` | String | URL or Base64 string of the image. |
+
+---
+
+## 7. Customer Checkout
+Processes a new customer order with real-time stock validation for each item.
+
+- **URL**: `/api/checkout`
+- **Method**: `POST`
+- **Payload**:
+  ```json
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john@example.com",
+    "phoneNo": "123456789",
+    "address": "123 High St",
+    "state": "London",
+    "zipCode": "E1 6AN",
+    "country": "UK",
+    "paymentMethod": "COD",
+    "deliveryCharges": 5.00,
+    "totalPrice": 45.99,
+    "items": [
+      {
+        "productId": "60d5ecb8b3b3b3b3b3b3b3b3",
+        "name": "Strawberry Ice",
+        "price": 12.99,
+        "variant": "Standard",
+        "quantity": 1,
+        "image": "https://example.com/img.png"
+      }
+    ]
+  }
+  ```
+- **Success Response**: `201 Created`
+- **Error Response**: `400 Bad Request` (Out of stock or missing fields)
+
+---
+
+## 8. Get All Orders
+Retrieves all orders with overall revenue and pending order statistics for the admin dashboard.
+
+- **URL**: `/api/orders`
+- **Method**: `GET`
+- **Success Response**:
+  ```json
+  {
+    "orders": [...],
+    "stats": {
+      "totalRevenue": 1500.50,
+      "pendingOrders": 5,
+      "totalOrders": 25
+    }
+  }
+  ```
+
+---
+
+## 9. Update Order Status
+Updates the fulfillment status of a specific order.
+
+- **URL**: `/api/orders/[id]`
+- **Method**: `PUT`
+- **Payload**:
+  ```json
+  { "status": "SHIPPED" }
+  ```
+- **Statuses**: `PENDING`, `SHIPPED`, `DELIVERED`, `CANCELLED`
+
+---
+
+## 10. Get Aggregated Customers
+Retrieves a unique list of customers aggregated from the entire order history.
+
+- **URL**: `/api/customers`
+- **Method**: `GET`
+- **Success Response**:
+  ```json
+  {
+    "customers": [
+      {
+        "email": "customer@example.com",
+        "name": "Jane Smith",
+        "totalSpent": 450.00,
+        "totalOrders": 3,
+        "lastOrderDate": "2026-04-01T..."
+      }
+    ],
+    "stats": {
+      "totalCustomers": 120,
+      "avgLTV": 85.50
+    }
+  }
+  ```
+
