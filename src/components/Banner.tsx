@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import { banner } from './images';
 
 export const NicotineWarningMarquee = () => {
     const warningText = "WARNING: This product contains nicotine. Nicotine is an addictive chemical.";
@@ -37,7 +38,7 @@ export const DeliveryBanner: React.FC = () => {
         <div className="hidden md:block w-full">
             <div className="max-w-[1400px] mx-auto w-full h-[500px] overflow-hidden relative">
                 <Image
-                    src="/banner.png"
+                    src={banner}
                     alt="Same-Day Delivery in Karachi for All Your Needs - Orders before 3:00 PM"
                     fill
                     className="mt-20 object-cover"

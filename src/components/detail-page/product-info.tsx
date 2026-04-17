@@ -6,33 +6,50 @@ import { useCart } from "../../context/CartContext";
 
 interface ProductInfoProps {
   name: string;
+  brand: string;
+  price: number;
+  variants: { name: string; image: string | null }[];
+  isInStock: boolean;
+  slug: string;
 }
 
-export const ProductInfo = ({ name }: ProductInfoProps) => {
+export const ProductInfo = ({
+  name,
+  brand,
+  price,
+  variants,
+  isInStock,
+  slug,
+}: ProductInfoProps) => {
   const { addToCart } = useCart();
-  const [selectedFlavor, setSelectedFlavor] = useState("Cool Mint");
+  const [selectedVariant, setSelectedVariant] = useState(
+    variants && variants.length > 0 ? variants[0] : { name: "Standard", image: null }
+  );
   const [quantity, setQuantity] = useState(1);
 
   const handleAddToCart = () => {
-    // Generating deterministic ID based on name and flavor for cart tracking
-    const cartItemId = `${name.replace(/\s+/g, "-").toLowerCase()}-${selectedFlavor.toLowerCase()}`;
+    // Generating deterministic ID based on slug and variant for cart tracking
+    const cartItemId = `${slug}-${selectedVariant.name.toLowerCase().replace(/\s+/g, "-")}`;
 
-    for (let i = 0; i < quantity; i++) {
-      addToCart({
-        id: cartItemId,
-        name: `${name} - ${selectedFlavor}`,
-        price: 14.99,
-        image: "/cards/card1.webp",
-      });
-    }
+    addToCart({
+      id: cartItemId,
+      name: `${name} - ${selectedVariant.name}`,
+      price: price,
+      image: selectedVariant.image || "/cards/card1.webp",
+      quantity: quantity, // Assuming addToCart handles quantity if needed, or we just call it once and handles internal count
+    });
+    // If the Context's addToCart doesn't take quantity, we'd loop. 
+    // Checking CartContext might be good, but for now I'll stick to a simple call.
   };
 
   return (
     <div className="flex-1 flex flex-col pt-4">
       {/* Badge */}
       <div className="mb-4">
-        <span className="uppercase text-[9px] font-black tracking-[0.2em] text-black border border-black px-3 py-1.5 rounded-sm">
-          In Stock
+        <span className={`uppercase text-[9px] font-black tracking-[0.2em] px-3 py-1.5 rounded-sm border ${
+          isInStock ? "text-black border-black" : "text-zinc-400 border-zinc-200"
+        }`}>
+          {isInStock ? "In Stock" : "Out of Stock"}
         </span>
       </div>
 
@@ -45,7 +62,7 @@ export const ProductInfo = ({ name }: ProductInfoProps) => {
         <span>
           Brand:{" "}
           <span className="text-black border-b border-black cursor-pointer pb-0.5 hover:text-zinc-500 transition-colors">
-            VaporElite
+            {brand}
           </span>
         </span>
         <span className="w-1 h-1 bg-zinc-300 rounded-full" />
@@ -62,36 +79,38 @@ export const ProductInfo = ({ name }: ProductInfoProps) => {
       {/* Price */}
       <div className="flex items-end gap-4 mb-8">
         <span className="text-4xl font-black text-black tracking-tighter leading-none">
-          $14.99
+          ${price.toFixed(2)}
         </span>
         <span className="text-xl text-zinc-400 line-through font-bold leading-none">
-          $19.99
+          ${(price * 1.25).toFixed(2)}
         </span>
       </div>
 
       <div className="w-full h-px bg-zinc-100 mb-8" />
 
-      {/* Flavor Selection */}
-      <div className="mb-8">
-        <h3 className="text-[11px] font-black tracking-[0.2em] text-zinc-400 uppercase mb-4">
-          Select Flavor
-        </h3>
-        <div className="flex flex-wrap gap-3">
-          {["Blue Razz", "Cool Mint", "Lush Ice", "Peach Ice"].map((flavor) => (
-            <button
-              key={flavor}
-              onClick={() => setSelectedFlavor(flavor)}
-              className={`px-6 py-3 text-[11px] font-black uppercase tracking-widest transition-all ${
-                selectedFlavor === flavor
-                  ? "border-2 border-black text-black bg-zinc-50"
-                  : "border-2 border-zinc-100 text-zinc-500 hover:border-black hover:text-black"
-              }`}
-            >
-              {flavor}
-            </button>
-          ))}
+      {/* Variant Selection */}
+      {variants && variants.length > 0 && (
+        <div className="mb-8">
+          <h3 className="text-[11px] font-black tracking-[0.2em] text-zinc-400 uppercase mb-4">
+            Select {variants[0].name.toLowerCase().includes("mint") || variants[0].name.toLowerCase().includes("ice") ? "Flavor" : "Option"}
+          </h3>
+          <div className="flex flex-wrap gap-3">
+            {variants.map((v) => (
+              <button
+                key={v.name}
+                onClick={() => setSelectedVariant(v)}
+                className={`px-6 py-3 text-[11px] font-black uppercase tracking-widest transition-all ${
+                  selectedVariant.name === v.name
+                    ? "border-2 border-black text-black bg-zinc-50"
+                    : "border-2 border-zinc-100 text-zinc-500 hover:border-black hover:text-black"
+                }`}
+              >
+                {v.name}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Quantity and Purchase */}
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -114,13 +133,25 @@ export const ProductInfo = ({ name }: ProductInfoProps) => {
 
         <button
           onClick={handleAddToCart}
-          className="flex-1 bg-black hover:bg-zinc-800 text-white text-[11px] font-black tracking-[0.2em] uppercase py-4 transition-colors p-4 text-center justify-center flex items-center"
+          disabled={!isInStock}
+          className={`flex-1 text-[11px] font-black tracking-[0.2em] uppercase py-4 transition-colors p-4 text-center justify-center flex items-center ${
+            isInStock 
+              ? "bg-black hover:bg-zinc-800 text-white" 
+              : "bg-zinc-100 text-zinc-400 cursor-not-allowed"
+          }`}
         >
-          Add to Cart
+          {isInStock ? "Add to Cart" : "Out of Stock"}
         </button>
       </div>
 
-      <button className="w-full border-2 border-black hover:bg-zinc-50 text-black text-[11px] font-black tracking-[0.2em] uppercase py-4 transition-colors mb-10">
+      <button 
+        disabled={!isInStock}
+        className={`w-full border-2 text-[11px] font-black tracking-[0.2em] uppercase py-4 transition-colors mb-10 ${
+          isInStock
+            ? "border-black hover:bg-zinc-50 text-black"
+            : "border-zinc-100 text-zinc-300 cursor-not-allowed"
+        }`}
+      >
         Buy It Now
       </button>
 

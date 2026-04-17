@@ -75,7 +75,7 @@ const ProductGrid = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-x-4 md:gap-x-6 gap-y-10 md:gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product) => {
           const slug = product.name
             .toLowerCase()

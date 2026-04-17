@@ -5,12 +5,23 @@ import { useCart } from "../../context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
 
-const OrderSummarySidebar = () => {
+interface OrderSummarySidebarProps {
+  onPlaceOrder: () => void;
+  loading: boolean;
+  shippingMethod: string;
+}
+
+const OrderSummarySidebar = ({ 
+  onPlaceOrder, 
+  loading, 
+  shippingMethod 
+}: OrderSummarySidebarProps) => {
   const { cartItems, cartTotal } = useCart();
 
-  // Derived values (just for display purposes to match design)
+  // Calculate shipping based on method
+  const shipping = shippingMethod === "express" ? 500 : shippingMethod === "priority" ? 1000 : 0;
+  
   const hasItems = cartItems.length > 0;
-  const shipping = hasItems ? 0 : 0; // Using 0 to match the "Free" standard shipping layout shown
   const tax = cartTotal * 0.05; // 5% tax estimate
   const total = cartTotal + shipping + tax;
 
@@ -73,7 +84,7 @@ const OrderSummarySidebar = () => {
         </div>
         <div className="flex justify-between text-xs font-black uppercase tracking-wider">
           <span className="text-zinc-600">SHIPPING</span>
-          <span className="text-black">Rs. {shipping}</span>
+          <span className="text-black">{shipping > 0 ? `Rs. ${shipping.toLocaleString()}` : "FREE"}</span>
         </div>
         <div className="flex justify-between text-xs font-black uppercase tracking-wider">
           <span className="text-zinc-600">ESTIMATED TAX</span>
@@ -114,14 +125,18 @@ const OrderSummarySidebar = () => {
 
       {/* Place Order Button */}
       <button
-        disabled={!hasItems}
-        className={`w-full relative z-10 py-4 text-sm font-black uppercase tracking-[0.2em] transition-colors rounded-sm shadow-md ${
-          hasItems
+        onClick={onPlaceOrder}
+        disabled={!hasItems || loading}
+        className={`w-full relative z-10 py-4 text-sm font-black uppercase tracking-[0.2em] transition-all rounded-sm shadow-md flex items-center justify-center gap-3 ${
+          hasItems && !loading
             ? "bg-[#cc0000] text-white hover:bg-red-700 active:scale-[0.98]"
             : "bg-zinc-300 text-zinc-500 cursor-not-allowed"
         }`}
       >
-        PLACE ORDER
+        {loading && (
+          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+        )}
+        {loading ? "PROCESSING..." : "PLACE ORDER"}
       </button>
     </div>
   );

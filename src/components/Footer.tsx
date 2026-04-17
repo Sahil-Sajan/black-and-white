@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Twitter, Instagram, HelpCircle, Phone, Mail, MapPin } from 'lucide-react';
+import { logo } from './images';
 
 const Footer = () => {
     return (
@@ -12,7 +13,7 @@ const Footer = () => {
                 <div className="flex flex-col gap-6">
                     <Link href="/" className="relative block h-16 w-16 transition-transform duration-300 hover:scale-105">
                         <Image
-                            src="/logo.jfif"
+                            src={logo}
                             alt="Black & White Vapors Logo"
                             fill
                             className="object-contain"

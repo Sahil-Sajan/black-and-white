@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { Search, ShoppingCart, ChevronDown, Menu, X } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import CartDrawer from "./CartDrawer";
+import { logo } from "./images";
 
 // --- DATA STRUCTURE ---
 const MENU_LINKS = [
@@ -117,7 +118,7 @@ const Navbar = () => {
             className="group relative block h-12 w-12 md:h-24 md:w-20 transition-transform duration-300 hover:scale-105"
           >
             <Image
-              src="/logo.png"
+              src={logo}
               alt="Logo"
               fill
               className="object-contain"

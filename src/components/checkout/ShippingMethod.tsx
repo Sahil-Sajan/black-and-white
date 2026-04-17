@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
+interface ShippingMethodProps {
+    selected: string;
+    onSelect: (val: string) => void;
+}
 
-const ShippingMethod = () => {
-    const [selectedMethod, setSelectedMethod] = useState('standard');
-
+const ShippingMethod = ({ selected, onSelect }: ShippingMethodProps) => {
     return (
         <div className="mb-10">
             <h2 className="text-2xl font-black uppercase tracking-tighter text-black mb-6">2. SHIPPING METHOD</h2>
@@ -13,15 +14,15 @@ const ShippingMethod = () => {
                 {/* Standard Method */}
                 <label 
                     className={`flex items-start gap-3 p-4 border cursor-pointer transition-all ${
-                        selectedMethod === 'standard' ? 'border-black bg-zinc-50' : 'border-zinc-200 hover:border-zinc-300'
+                        selected === 'standard' ? 'border-black bg-zinc-50' : 'border-zinc-200 hover:border-zinc-300'
                     }`}
                 >
                     <input 
                         type="radio" 
                         name="shipping_method" 
                         value="standard"
-                        checked={selectedMethod === 'standard'}
-                        onChange={(e) => setSelectedMethod(e.target.value)}
+                        checked={selected === 'standard'}
+                        onChange={(e) => onSelect(e.target.value)}
                         className="mt-1 w-4 h-4 accent-black" 
                     />
                     <div>
@@ -33,15 +34,15 @@ const ShippingMethod = () => {
                 {/* Express Method */}
                 <label 
                     className={`flex items-start gap-3 p-4 border cursor-pointer transition-all ${
-                        selectedMethod === 'express' ? 'border-black bg-zinc-50' : 'border-zinc-200 hover:border-zinc-300'
+                        selected === 'express' ? 'border-black bg-zinc-50' : 'border-zinc-200 hover:border-zinc-300'
                     }`}
                 >
                     <input 
                         type="radio" 
                         name="shipping_method" 
                         value="express"
-                        checked={selectedMethod === 'express'}
-                        onChange={(e) => setSelectedMethod(e.target.value)}
+                        checked={selected === 'express'}
+                        onChange={(e) => onSelect(e.target.value)}
                         className="mt-1 w-4 h-4 accent-black" 
                     />
                     <div>
@@ -53,15 +54,15 @@ const ShippingMethod = () => {
                 {/* Priority Method */}
                 <label 
                     className={`flex items-start gap-3 p-4 border cursor-pointer transition-all ${
-                        selectedMethod === 'priority' ? 'border-black bg-zinc-50' : 'border-zinc-200 hover:border-zinc-300'
+                        selected === 'priority' ? 'border-black bg-zinc-50' : 'border-zinc-200 hover:border-zinc-300'
                     }`}
                 >
                     <input 
                         type="radio" 
                         name="shipping_method" 
                         value="priority"
-                        checked={selectedMethod === 'priority'}
-                        onChange={(e) => setSelectedMethod(e.target.value)}
+                        checked={selected === 'priority'}
+                        onChange={(e) => onSelect(e.target.value)}
                         className="mt-1 w-4 h-4 accent-black" 
                     />
                     <div>

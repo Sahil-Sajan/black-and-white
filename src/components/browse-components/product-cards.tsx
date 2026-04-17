@@ -53,8 +53,8 @@ export const ProductCard = ({
         </h3>
       </Link>
 
-      <div className="flex flex-col items-center w-full mt-2">
-        <p className="text-lg font-black text-black">${price.toFixed(2)}</p>
+      <div className="flex flex-col items-center w-full mt-auto pt-4">
+        <p className="text-lg font-black text-black">Rs.{price.toLocaleString()}</p>
 
         {/* Star Rating */}
         <div className="mt-3 flex items-center gap-1">
@@ -66,7 +66,7 @@ export const ProductCard = ({
               className="text-black"
             />
           ))}
-          <span className="ml-2 text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
+          <span className="ml-2 text-[9px] font-bold text-zinc-400 uppercase tracking-tighter">
             (1 Review)
           </span>
         </div>
@@ -74,12 +74,18 @@ export const ProductCard = ({
         {/* Add to Cart Button */}
         <button
           onClick={() => addToCart({ id: slug, name, price, image })}
-          className="mt-6 w-full bg-black text-white py-4 text-[11px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all duration-300 hover:bg-zinc-800 active:scale-95 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 translate-y-2 lg:group-hover:translate-y-0"
+          className="group/btn relative mt-6 w-full bg-black py-4 text-[9px] md:text-[11px] font-black uppercase tracking-[0.15em] text-white overflow-hidden transition-all duration-300 hover:bg-zinc-900 active:scale-95 flex items-center justify-center gap-2"
         >
-          <ShoppingCart size={14} strokeWidth={3} />
-          Add to Cart
+          <span className="relative z-10 flex items-center gap-2">
+            <ShoppingCart size={12} className="md:w-[14px] md:h-[14px] transition-transform duration-300 group-hover/btn:-translate-y-1" strokeWidth={3} />
+            Add to Cart
+          </span>
+
+          {/* Subtle Hover Slide Effect */}
+          <div className="absolute inset-0 bg-zinc-800 translate-y-full transition-transform duration-300 group-hover/btn:translate-y-0" />
         </button>
       </div>
+
     </div>
   );
 };

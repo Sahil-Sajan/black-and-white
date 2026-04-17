@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
+interface PaymentMethodProps {
+    selected: string;
+    onSelect: (val: string) => void;
+}
 
-const PaymentMethod = () => {
-    const [selectedMethod, setSelectedMethod] = useState('cod');
+const PaymentMethod = ({ selected, onSelect }: PaymentMethodProps) => {
 
     return (
         <div className="mb-10">
@@ -13,48 +15,48 @@ const PaymentMethod = () => {
                 {/* Cash on Delivery Tab */}
                 <label 
                     className={`flex-1 flex items-center justify-center gap-2 p-4 border-b-2 cursor-pointer transition-all ${
-                        selectedMethod === 'cod' ? 'border-b-red-600 bg-white' : 'border-b-transparent bg-zinc-50 hover:bg-zinc-100 text-zinc-500'
+                        selected === 'cod' ? 'border-b-red-600 bg-white' : 'border-b-transparent bg-zinc-50 hover:bg-zinc-100 text-zinc-500'
                     }`}
                 >
                     <input 
                         type="radio" 
                         name="payment_method" 
                         value="cod"
-                        checked={selectedMethod === 'cod'}
-                        onChange={(e) => setSelectedMethod(e.target.value)}
+                        checked={selected === 'cod'}
+                        onChange={(e) => onSelect(e.target.value)}
                         className="mt-0.5 w-4 h-4 accent-red-600" 
                     />
-                    <span className={`text-sm font-bold uppercase ${selectedMethod === 'cod' ? 'text-black' : ''}`}>CASH ON DELIVERY</span>
+                    <span className={`text-sm font-bold uppercase ${selected === 'cod' ? 'text-black' : ''}`}>CASH ON DELIVERY</span>
                 </label>
 
                 {/* Bank Transfer Tab */}
                 <label 
                     className={`flex-1 flex items-center justify-center gap-2 p-4 border-b-2 border-l border-zinc-200 cursor-pointer transition-all ${
-                        selectedMethod === 'bank' ? 'border-b-red-600 bg-white' : 'border-b-transparent bg-zinc-50 hover:bg-zinc-100 text-zinc-500'
+                        selected === 'bank' ? 'border-b-red-600 bg-white' : 'border-b-transparent bg-zinc-50 hover:bg-zinc-100 text-zinc-500'
                     }`}
                 >
                     <input 
                         type="radio" 
                         name="payment_method" 
                         value="bank"
-                        checked={selectedMethod === 'bank'}
-                        onChange={(e) => setSelectedMethod(e.target.value)}
+                        checked={selected === 'bank'}
+                        onChange={(e) => onSelect(e.target.value)}
                         className="mt-0.5 w-4 h-4 accent-red-600" 
                     />
-                    <span className={`text-sm font-bold uppercase ${selectedMethod === 'bank' ? 'text-black' : ''}`}>BANK TRANSFER</span>
+                    <span className={`text-sm font-bold uppercase ${selected === 'bank' ? 'text-black' : ''}`}>BANK TRANSFER</span>
                 </label>
             </div>
 
             {/* Content Area */}
             <div className="border border-t-0 border-zinc-200 p-6 bg-white min-h-[120px]">
-                {selectedMethod === 'cod' && (
+                {selected === 'cod' && (
                     <div className="text-sm text-zinc-600 leading-relaxed">
                         <p className="font-bold text-black mb-2 uppercase text-xs tracking-wider">Pay when you receive</p>
                         You have selected Cash on Delivery. Please ensure you have the exact amount ready when our delivery partner arrives at your shipping address.
                     </div>
                 )}
 
-                {selectedMethod === 'bank' && (
+                {selected === 'bank' && (
                     <div className="text-sm text-zinc-600 leading-relaxed space-y-4">
                         <p className="font-bold text-black uppercase text-xs tracking-wider">Direct Bank Transfer</p>
                         <p>Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
