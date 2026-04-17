@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 export interface CartItem {
+  variant: string;
   id: string; // We'll use id or create one from slug/name if not provided
   name: string;
   price: number;

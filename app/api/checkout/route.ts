@@ -9,9 +9,9 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     // Check for required fields
-    const { 
-        firstName, lastName, address, state, zipCode, country, 
-        paymentMethod, deliveryCharges, items, totalPrice, phoneNo, email 
+    const {
+      firstName, lastName, address, state, zipCode, country,
+      paymentMethod, deliveryCharges, items, totalPrice, phoneNo, email
     } = body;
 
     if (!firstName || !lastName || !address || !items || !totalPrice || !email) {
@@ -20,38 +20,38 @@ export async function POST(req: Request) {
 
     // --- STOCK VALIDATION ---
     for (const item of items) {
-       const product = await Product.findById(item.productId);
-       if (!product) {
-         return NextResponse.json({ error: `Product '${item.name}' not found.` }, { status: 404 });
-       }
-       if (!product.isInStock) {
-         return NextResponse.json({ error: `Item '${item.name}' is currently out of stock.` }, { status: 400 });
-       }
+      const product = await Product.findById(item.productId);
+      if (!product) {
+        return NextResponse.json({ error: `Product '${item.name}' not found.` }, { status: 404 });
+      }
+      if (!product.isInStock) {
+        return NextResponse.json({ error: `Item '${item.name}' is currently out of stock.` }, { status: 400 });
+      }
     }
     // ------------------------
 
     const newOrder = new Order({
-        firstName,
-        lastName,
-        email,
-        phone: phoneNo,
-        address,
-        state,
-        zipCode,
-        country,
-        paymentMethod,
-        deliveryCharges,
-        items,
-        totalPrice,
-        status: "PENDING"
+      firstName,
+      lastName,
+      email,
+      phone: phoneNo,
+      address,
+      state,
+      zipCode,
+      country,
+      paymentMethod,
+      deliveryCharges,
+      items,
+      totalPrice,
+      status: "PENDING"
     });
 
     await newOrder.save();
 
-    return NextResponse.json({ 
-        success: true, 
-        message: "Order placed successfully!", 
-        order: newOrder 
+    return NextResponse.json({
+      success: true,
+      message: "Order placed successfully!",
+      order: newOrder
     }, { status: 201 });
 
   } catch (error: unknown) {
