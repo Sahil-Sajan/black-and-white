@@ -101,14 +101,14 @@ export default function CustomersPage() {
         />
         <StatCard
           title="AVERAGE LTV"
-          value={`$${stats.avgLTV.toFixed(2)}`}
+          value={`Rs ${stats.avgLTV.toFixed(2)}`}
           icon={CreditCard}
           iconBgColor="bg-blue-50"
           iconColor="text-blue-600"
         />
         <StatCard
           title="TOP SPENDER"
-          value={customers.length > 0 ? `$${customers[0].totalSpent.toFixed(2)}` : "$0.00"}
+          value={customers.length > 0 ? `Rs ${customers[0].totalSpent.toFixed(2)}` : "Rs 0.00"}
           icon={TrendingUp}
           iconBgColor="bg-purple-50"
           iconColor="text-purple-600"
@@ -176,7 +176,7 @@ export default function CustomersPage() {
                       Total Spent
                     </p>
                     <p className="text-base font-black text-slate-900">
-                      ${customer.totalSpent.toFixed(2)}
+                      Rs {customer.totalSpent.toFixed(2)}
                     </p>
                   </div>
                   <div className="flex gap-2">
@@ -268,7 +268,7 @@ export default function CustomersPage() {
                     </td>
                     <td className="py-5 px-6 text-right">
                       <p className="text-sm font-black text-slate-800">
-                        ${customer.totalSpent.toFixed(2)}
+                        Rs {customer.totalSpent.toFixed(2)}
                       </p>
                     </td>
                     <td className="py-5 px-6">

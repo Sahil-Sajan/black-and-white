@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/src/lib/mongoose";
 import Product from "@/src/models/Product";
+import { deleteBlobs } from "@/src/lib/blob";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -23,10 +24,15 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   try {
     const { id } = await params;
     await dbConnect();
-    const body = await req.json();
+    const { deletedImages, ...updateData } = await req.json();
 
-    const updatedProduct = await Product.findByIdAndUpdate(id, body, {
-      new: true,
+    // Delete orphaned images from Vercel Blob if any (includes variant images and potentially mainImage)
+    if (deletedImages && Array.isArray(deletedImages) && deletedImages.length > 0) {
+      await deleteBlobs(deletedImages);
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
+      returnDocument: "after",
       runValidators: true,
     });
 
@@ -45,6 +51,23 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
   try {
     const { id } = await params;
     await dbConnect();
+
+    // Find the product first to get image URLs
+    const product = await Product.findById(id);
+    if (!product) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    // Collect all image URLs from variants and mainImage
+    const imageUrls = [
+      product.mainImage,
+      ...product.variants.map((v: any) => v.image)
+    ].filter((img): img is string => !!img);
+
+    // Delete images from Vercel Blob
+    if (imageUrls.length > 0) {
+      await deleteBlobs(imageUrls);
+    }
 
     const deletedProduct = await Product.findByIdAndDelete(id);
 

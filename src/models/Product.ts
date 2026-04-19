@@ -14,12 +14,13 @@ export interface IProduct extends Document {
   mg: string;
   price: number;
   description: string;
+  mainImage: string | null;
   isInStock: boolean;
   variants: IVariant[];
 }
 
 const VariantSchema = new Schema<IVariant>({
-  name: { type: String, required: true },
+  name: { type: String, required: false, default: "" },
   image: { type: String, default: null },
 });
 
@@ -32,6 +33,7 @@ const ProductSchema = new Schema<IProduct>(
     mg: { type: String, required: false },
     price: { type: Number, required: true },
     description: { type: String },
+    mainImage: { type: String, default: null },
     isInStock: { type: Boolean, default: true },
     variants: [VariantSchema],
   },
@@ -45,4 +47,9 @@ ProductSchema.pre<IProduct>("save", function () {
   }
 });
 
-export default mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
+// Clear cached model to ensure schema changes are picked up in development
+if (mongoose.models.Product) {
+  delete (mongoose.models as any).Product;
+}
+
+export default mongoose.model<IProduct>("Product", ProductSchema);

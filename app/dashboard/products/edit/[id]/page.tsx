@@ -13,13 +13,15 @@ import {
   BadgeInfo,
   Tag,
   Layers,
-  LayoutGrid
+  LayoutGrid,
+  X,
 } from "lucide-react";
 
 interface Variant {
   id: string;
   name: string;
   image: string | null;
+  file?: File | null;
 }
 
 import { BRANDS, CATEGORIES, MG_OPTIONS } from "@/src/lib/data";
@@ -37,14 +39,19 @@ export default function EditProductPage() {
     price: "",
     description: "",
     isInStock: true,
+    mainImage: null as string | null,
+    mainImageFile: null as File | null,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
   const [isFetching, setIsFetching] = useState(true);
   const [message, setMessage] = useState({ type: "", text: "" });
 
   const [variants, setVariants] = useState<Variant[]>([]);
+  const [deletedImages, setDeletedImages] = useState<string[]>([]);
 
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+  const mainImageInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (id) {
@@ -70,6 +77,8 @@ export default function EditProductPage() {
         price: product.price.toString(),
         description: product.description || "",
         isInStock: product.isInStock,
+        mainImage: product.mainImage || null,
+        mainImageFile: null,
       });
 
       // Map backend variants to frontend variants with IDs
@@ -103,6 +112,10 @@ export default function EditProductPage() {
 
   const removeVariant = (id: string) => {
     if (variants.length > 1) {
+      const variantToRemove = variants.find((v) => v.id === id);
+      if (variantToRemove?.image && !variantToRemove.file) {
+        setDeletedImages((prev) => [...prev, variantToRemove.image!]);
+      }
       setVariants((prev) => prev.filter((v) => v.id !== id));
     }
   };
@@ -118,7 +131,16 @@ export default function EditProductPage() {
     if (file) {
       const url = URL.createObjectURL(file);
       setVariants((prev) =>
-        prev.map((v) => (v.id === id ? { ...v, image: url } : v))
+        prev.map((v) => {
+          if (v.id === id) {
+            // If there's an existing image (and it's not a local blob), mark it for deletion
+            if (v.image && !v.file && !v.image.startsWith("blob:")) {
+              setDeletedImages((prevDeleted) => [...prevDeleted, v.image!]);
+            }
+            return { ...v, image: url, file };
+          }
+          return v;
+        })
       );
     }
   };
@@ -129,11 +151,52 @@ export default function EditProductPage() {
     setMessage({ type: "", text: "" });
 
     try {
+      // 0. Upload main image if new
+      setLoadingMessage("Uploading Main Image...");
+      let mainImageUrl = formData.mainImage;
+      if (formData.mainImageFile) {
+        const response = await fetch(
+          `/api/upload?filename=${encodeURIComponent(formData.mainImageFile.name)}`,
+          {
+            method: "POST",
+            body: formData.mainImageFile,
+          },
+        );
+        const blob = await response.json();
+        if (blob.error) throw new Error(blob.error);
+        mainImageUrl = blob.url;
+      }
+
+      // 1. Upload new images to Vercel Blob
+      setLoadingMessage("Uploading Variations...");
+      const updatedVariants = await Promise.all(
+        variants.map(async (v) => {
+          if (v.file) {
+            const response = await fetch(
+              `/api/upload?filename=${encodeURIComponent(v.file.name)}`,
+              {
+                method: "POST",
+                body: v.file,
+              }
+            );
+            const blob = await response.json();
+            if (blob.error) throw new Error(blob.error);
+            return { name: v.name, image: blob.url };
+          }
+          return { name: v.name, image: v.image };
+        })
+      );
+
+      setLoadingMessage("Updating Product Data...");
       const payload = {
         ...formData,
         price: Number(formData.price),
-        variants: variants.map(({ name, image }) => ({ name, image }))
+        mainImage: mainImageUrl,
+        variants: updatedVariants,
+        deletedImages,
       };
+      // Remove local helper field before sending
+      delete (payload as any).mainImageFile;
       
       const response = await fetch(`/api/products/${id}`, {
         method: 'PUT',
@@ -159,6 +222,7 @@ export default function EditProductPage() {
       setMessage({ type: "error", text: error.message || "Failed to update product" });
     } finally {
       setIsLoading(false);
+      setLoadingMessage("");
     }
   };
 
@@ -206,7 +270,7 @@ export default function EditProductPage() {
             disabled={isLoading}
             className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-700 transition-colors shadow-lg shadow-blue-50 disabled:opacity-50"
           >
-            <CheckCircle2 size={16} /> {isLoading ? "Updating..." : "Update Product"}
+            <CheckCircle2 size={16} /> {isLoading ? (loadingMessage || "Updating...") : "Update Product"}
           </button>
         </div>
       </div>
@@ -296,6 +360,88 @@ export default function EditProductPage() {
 
           {/* Section: Variants */}
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+            <div className="px-8 py-5 border-b border-slate-100 bg-slate-50/50">
+              <h2 className="text-xs font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                <ImageIcon size={14} className="text-blue-500" />
+                Featured Product Image
+              </h2>
+            </div>
+            <div className="p-8">
+              <div
+                onClick={() => mainImageInputRef.current?.click()}
+                className={`w-full max-w-sm h-64 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all bg-white relative group/img ${
+                  formData.mainImage
+                    ? "border-blue-500"
+                    : "border-slate-200 hover:border-slate-300"
+                }`}
+              >
+                {formData.mainImage ? (
+                  <>
+                    <div className="relative w-full h-full p-4">
+                      <Image
+                        src={formData.mainImage}
+                        alt="Product"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Track for deletion if it's a permanent URL
+                        if (formData.mainImage && !formData.mainImageFile) {
+                          setDeletedImages((prev) => [...prev, formData.mainImage!]);
+                        }
+                        setFormData((prev) => ({
+                          ...prev,
+                          mainImage: null,
+                          mainImageFile: null,
+                        }));
+                      }}
+                      className="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-xl shadow-lg opacity-0 group-hover/img:opacity-100 transition-opacity z-10"
+                    >
+                      <X size={16} />
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 group-hover:text-blue-500 transition-colors">
+                      <ImageIcon size={24} />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs font-black text-slate-800 uppercase tracking-widest mb-1">
+                        Upload Main Image
+                      </p>
+                      <p className="text-[10px] font-bold text-slate-400">
+                        Supports shared visuals across flavors
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <input
+                  ref={mainImageInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      // Mark old for deletion if it exists
+                      if (formData.mainImage && !formData.mainImageFile) {
+                        setDeletedImages((prev) => [...prev, formData.mainImage!]);
+                      }
+                      setFormData((prev) => ({
+                        ...prev,
+                        mainImage: URL.createObjectURL(file),
+                        mainImageFile: file,
+                      }));
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
             <div className="px-8 py-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
               <h2 className="text-xs font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
                 <Layers size={14} className="text-orange-500" />
@@ -332,9 +478,31 @@ export default function EditProductPage() {
                       }`}
                     >
                       {variant.image ? (
-                        <div className="relative w-full h-full p-2">
-                          <Image src={variant.image} alt="Variant" fill className="object-contain" />
-                        </div>
+                        <>
+                          <div className="relative w-full h-full p-2">
+                            <Image src={variant.image} alt="Variant" fill className="object-contain" />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Track for deletion if it's a permanent URL
+                              if (variant.image && !variant.file) {
+                                setDeletedImages((prev) => [...prev, variant.image!]);
+                              }
+                              setVariants((prev) =>
+                                prev.map((v) =>
+                                  v.id === variant.id
+                                    ? { ...v, image: null, file: null }
+                                    : v,
+                                ),
+                              );
+                            }}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white p-1.5 rounded-lg shadow-md z-10"
+                          >
+                            <X size={12} />
+                          </button>
+                        </>
                       ) : (
                         <div className="flex flex-col items-center gap-2">
                           <ImageIcon size={20} className="text-slate-300" />
@@ -352,10 +520,9 @@ export default function EditProductPage() {
 
                     {/* Variant Name */}
                     <div className="flex-1 space-y-2">
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Variation Name / Flavor</label>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Variation Name / Flavor (Optional)</label>
                       <input 
                         type="text"
-                        required
                         value={variant.name}
                         onChange={(e) => handleVariantNameChange(variant.id, e.target.value)}
                         placeholder="e.g. Strawberry Ice"
@@ -382,7 +549,7 @@ export default function EditProductPage() {
             </div>
             <div className="p-8 space-y-6">
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Base Price ($)</label>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Base Price (Rs)</label>
                 <input 
                   type="number"
                   name="price"

@@ -21,6 +21,7 @@ export default function CheckoutPage() {
     city: "",
     state: "",
     zipCode: "",
+    country: "",
     paymentMethod: "COD", // "COD" or "BANK_TRANSFER"
     accountNo: "", // Used when paymentMethod is BANK_TRANSFER
   });
@@ -41,7 +42,7 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     // Validation
-    if (!formData.firstName || !formData.email || !formData.address || !formData.phoneNo || !formData.city) {
+    if (!formData.firstName || !formData.email || !formData.address || !formData.phoneNo || !formData.city || !formData.country) {
       alert("Please fill in all required shipping fields.");
       return;
     }
@@ -68,17 +69,17 @@ export default function CheckoutPage() {
         address: formData.address,
         state: formData.state || formData.city,
         zipCode: formData.zipCode,
-        // country removed as requested
+        country: formData.country,
         paymentMethod: formData.paymentMethod === "COD" ? "COD" : `Bank Transfer (Acc: ${formData.accountNo})`,
         deliveryCharges: deliveryCharges,
         totalPrice: totalAmount,
         items: cartItems.map((item) => ({
-          productId: item.id.split('-')[0],
+          productId: item.id, // Fixed: use full slug/id
           name: item.name,
           price: item.price,
           variant: item.variant || (item.name.includes('-') ? item.name.split(' - ')[1] : "Standard"),
           quantity: item.quantity,
-          image: item.image,
+          // image removed as requested
         })),
       };
 

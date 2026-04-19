@@ -6,7 +6,6 @@ export interface IOrderItem {
   price: number;
   variant: string;
   quantity: number;
-  image: string;
 }
 
 export interface IOrder extends Document {
@@ -19,11 +18,13 @@ export interface IOrder extends Document {
   state: string;
   zipCode: string;
   country: string;
-  paymentMethod: "COD" | "ONLINE";
+  paymentMethod: "COD" | "ONLINE" | "BANK_TRANSFER";
   deliveryCharges: number;
   items: IOrderItem[];
   totalPrice: number;
   status: "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  trackingNumber?: string;
+  cancellationReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -34,7 +35,6 @@ const OrderItemSchema = new Schema<IOrderItem>({
   price: { type: Number, required: true },
   variant: { type: String, required: true },
   quantity: { type: Number, required: true, default: 1 },
-  image: { type: String, required: true },
 });
 
 const OrderSchema = new Schema<IOrder>(
@@ -48,7 +48,7 @@ const OrderSchema = new Schema<IOrder>(
     state: { type: String, required: true },
     zipCode: { type: String, required: true },
     country: { type: String, required: true },
-    paymentMethod: { type: String, enum: ["COD", "ONLINE"], required: true },
+    paymentMethod: { type: String, enum: ["COD", "ONLINE", "BANK_TRANSFER"], required: true },
     deliveryCharges: { type: Number, required: true },
     items: [OrderItemSchema],
     totalPrice: { type: Number, required: true },
@@ -57,6 +57,8 @@ const OrderSchema = new Schema<IOrder>(
       enum: ["PENDING", "SHIPPED", "DELIVERED", "CANCELLED"],
       default: "PENDING",
     },
+    trackingNumber: { type: String, required: false },
+    cancellationReason: { type: String, required: false },
   },
   { timestamps: true }
 );

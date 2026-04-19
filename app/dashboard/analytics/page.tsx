@@ -73,7 +73,7 @@ const AnalyticsPage = () => {
             </div>
           </div>
           <p className="text-[28px] font-black text-slate-800 mb-1">
-            $37,550.00
+            Rs 37,550.00
           </p>
           <p className="text-[11px] font-bold text-emerald-500">+14.2% var</p>
         </div>
@@ -113,7 +113,7 @@ const AnalyticsPage = () => {
               <BarChart2 size={18} strokeWidth={2.5} />
             </div>
           </div>
-          <p className="text-[28px] font-black text-slate-800 mb-1">$86.20</p>
+          <p className="text-[28px] font-black text-slate-800 mb-1">Rs 86.20</p>
           <p className="text-[11px] font-bold text-emerald-500">+8.1% var</p>
         </div>
       </div>
@@ -165,7 +165,7 @@ const AnalyticsPage = () => {
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 11, fill: "#64748b", fontWeight: 700 }}
-                  tickFormatter={(val) => `$${val / 1000}k`}
+                  tickFormatter={(val) => `Rs ${val / 1000}k`}
                 />
                 <Tooltip
                   cursor={{ stroke: "#3b82f6" }}
@@ -280,7 +280,7 @@ const AnalyticsPage = () => {
                   1,245
                 </td>
                 <td className="py-4 px-6 text-sm font-black text-emerald-600 text-right">
-                  $31,112.55
+                  Rs 31,112.55
                 </td>
                 <td className="py-4 px-6 text-center">
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-full">
@@ -296,7 +296,7 @@ const AnalyticsPage = () => {
                   432
                 </td>
                 <td className="py-4 px-6 text-sm font-black text-emerald-600 text-right">
-                  $38,448.00
+                  Rs 38,448.00
                 </td>
                 <td className="py-4 px-6 text-center">
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-full">

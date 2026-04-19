@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { Pencil, Plus, Package, AlertCircle, Trash2 } from "lucide-react";
+import { Pencil, Plus, Package, AlertCircle, Trash2, Search } from "lucide-react";
 import StatCard from "@/src/components/admin-dashboard/sale-cards";
 import Link from "next/link";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 interface Variant {
   name: string;
@@ -18,6 +19,7 @@ interface Product {
   category: string;
   price: number;
   isInStock: boolean;
+  mainImage: string | null;
   variants: Variant[];
 }
 
@@ -25,19 +27,24 @@ const ProductListingPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [stats, setStats] = useState({ total: 0, outOfStock: 0 });
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Search State
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const currentSearch = searchParams.get("search") || "";
+  const [searchInput, setSearchInput] = useState(currentSearch);
 
   // Modal State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
-      const res = await fetch("/api/products");
+      setIsLoading(true);
+      const search = searchParams.get("search") || "";
+      const res = await fetch(`/api/products?search=${encodeURIComponent(search)}`);
       const data = await res.json();
       if (res.ok) {
         setProducts(data.products);
@@ -48,16 +55,42 @@ const ProductListingPage = () => {
     } finally {
       setIsLoading(false);
     }
+  }, [searchParams]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const handleSearch = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (searchInput) {
+      params.set("search", searchInput);
+    } else {
+      params.delete("search");
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
   };
 
   const toggleInStock = async (id: string, currentStatus: boolean) => {
     try {
-      // Optimistic update
+      // Optimistic update for product list
       setProducts((prev) =>
         prev.map((p) =>
           p._id === id ? { ...p, isInStock: !currentStatus } : p,
         ),
       );
+
+      // Update stats locally
+      setStats((prev) => ({
+        ...prev,
+        outOfStock: currentStatus ? prev.outOfStock + 1 : prev.outOfStock - 1,
+      }));
 
       const res = await fetch(`/api/products/${id}`, {
         method: "PUT",
@@ -65,11 +98,13 @@ const ProductListingPage = () => {
         body: JSON.stringify({ isInStock: !currentStatus }),
       });
 
-      if (res.ok) {
+      if (!res.ok) {
+        // Rollback if failed
         fetchProducts();
       }
     } catch (err) {
       console.error(err);
+      fetchProducts();
     }
   };
 
@@ -160,6 +195,29 @@ const ProductListingPage = () => {
         </div>
       </div>
 
+      <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
+        <div className="relative grow w-full">
+          <input
+            type="text"
+            placeholder="Search products by name, brand, or category..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="w-full bg-white border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
+          />
+          <Search
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            size={18}
+          />
+        </div>
+        <button
+          onClick={handleSearch}
+          className="w-full md:w-auto bg-slate-900 text-white px-8 py-4 rounded-2xl text-sm font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 shrink-0"
+        >
+          Search
+        </button>
+      </div>
+
       {/* --- FILTERS TODO: APPLY FILTERS LIKE VAPES, E LIQUIDS, DISPOSABLES, PODS, ACCESSORIES --- */}
 
       {/* --- LISTING AREA --- */}
@@ -183,9 +241,9 @@ const ProductListingPage = () => {
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-slate-100 rounded-xl relative border border-slate-200 overflow-hidden flex items-center justify-center pt-2 px-2">
-                    {product.variants?.[0]?.image ? (
+                    {product.mainImage || product.variants?.[0]?.image ? (
                       <Image
-                        src={product.variants[0].image}
+                        src={product.mainImage || product.variants[0].image}
                         alt={product.name}
                         fill
                         className="object-contain"
@@ -217,7 +275,7 @@ const ProductListingPage = () => {
                     PRICE
                   </p>
                   <p className="text-sm font-black text-slate-800">
-                    ${product.price}
+                    Rs {product.price}
                   </p>
                 </div>
                 <div>
@@ -311,9 +369,9 @@ const ProductListingPage = () => {
                     <td className="py-5 px-6">
                       <div className="flex items-center gap-4">
                         <div className="relative w-12 h-12 bg-slate-100 rounded-full shrink-0 border border-slate-200 overflow-hidden flex items-center justify-center p-2">
-                          {product.variants?.[0]?.image ? (
+                          {product.mainImage || product.variants?.[0]?.image ? (
                             <Image
-                              src={product.variants[0].image}
+                              src={product.mainImage || product.variants[0].image}
                               alt={product.name}
                               fill
                               className="object-contain"
@@ -347,7 +405,7 @@ const ProductListingPage = () => {
 
                     <td className="py-5 px-6">
                       <p className="text-sm font-black text-slate-800">
-                        ${product.price.toFixed(2)}
+                        Rs {product.price.toFixed(2)}
                       </p>
                     </td>
                     <td className="py-5 px-6">

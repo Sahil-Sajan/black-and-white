@@ -10,6 +10,7 @@ interface ShippingAddressProps {
         city: string;
         state: string;
         zipCode: string;
+        country: string;
     };
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
 }
@@ -72,6 +73,15 @@ const ShippingAddress = ({ data, onChange }: ShippingAddressProps) => {
                     required
                     className="w-full border border-zinc-300 p-3 text-sm focus:border-black outline-none transition-colors"
                 />
+                <input 
+                    type="text" 
+                    name="country"
+                    placeholder="Country" 
+                    value={data.country}
+                    onChange={onChange}
+                    required
+                    className="w-full border border-zinc-300 p-3 text-sm focus:border-black outline-none transition-colors"
+                />
                 <select 
                     name="state"
                     value={data.state}
@@ -94,7 +104,7 @@ const ShippingAddress = ({ data, onChange }: ShippingAddressProps) => {
                     placeholder="ZIP/Postal Code (Optional)" 
                     value={data.zipCode}
                     onChange={onChange}
-                    className="w-full border border-zinc-300 p-3 text-sm focus:border-black outline-none transition-colors md:col-span-2"
+                    className="w-full border border-zinc-300 p-3 text-sm focus:border-black outline-none transition-colors"
                 />
             </div>
             

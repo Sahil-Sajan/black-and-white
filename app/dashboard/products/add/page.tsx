@@ -3,22 +3,24 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { 
-  Plus, 
-  ChevronLeft, 
-  Trash2, 
+import {
+  Plus,
+  ChevronLeft,
+  Trash2,
   Image as ImageIcon,
   CheckCircle2,
   BadgeInfo,
   Tag,
   Layers,
-  LayoutGrid
+  LayoutGrid,
+  X,
 } from "lucide-react";
 
 interface Variant {
   id: string;
   name: string;
   image: string | null;
+  file?: File | null;
 }
 
 import { BRANDS, CATEGORIES, MG_OPTIONS } from "@/src/lib/data";
@@ -32,18 +34,24 @@ export default function AddProductPage() {
     price: "",
     description: "",
     isInStock: true,
+    mainImage: null as string | null,
+    mainImageFile: null as File | null,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
   const [message, setMessage] = useState({ type: "", text: "" });
 
   const [variants, setVariants] = useState<Variant[]>([
-    { id: Math.random().toString(36).substr(2, 9), name: "", image: null }
+    { id: Math.random().toString(36).substr(2, 9), name: "", image: null },
   ]);
 
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+  const mainImageInputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -63,17 +71,18 @@ export default function AddProductPage() {
   };
 
   const handleVariantNameChange = (id: string, name: string) => {
-    setVariants((prev) =>
-      prev.map((v) => (v.id === id ? { ...v, name } : v))
-    );
+    setVariants((prev) => prev.map((v) => (v.id === id ? { ...v, name } : v)));
   };
 
-  const handleVariantImageUpload = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVariantImageUpload = (
+    id: string,
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
     if (file) {
       const url = URL.createObjectURL(file);
       setVariants((prev) =>
-        prev.map((v) => (v.id === id ? { ...v, image: url } : v))
+        prev.map((v) => (v.id === id ? { ...v, image: url, file } : v)),
       );
     }
   };
@@ -84,16 +93,56 @@ export default function AddProductPage() {
     setMessage({ type: "", text: "" });
 
     try {
+      // 0. Upload main image if exists
+      setLoadingMessage("Uploading Main Image...");
+      let mainImageUrl = formData.mainImage;
+      if (formData.mainImageFile) {
+        const response = await fetch(
+          `/api/upload?filename=${encodeURIComponent(formData.mainImageFile.name)}`,
+          {
+            method: "POST",
+            body: formData.mainImageFile,
+          },
+        );
+        const blob = await response.json();
+        if (blob.error) throw new Error(blob.error);
+        mainImageUrl = blob.url;
+      }
+
+      // 1. Upload variant images to Vercel Blob
+      setLoadingMessage("Uploading Variations...");
+      const updatedVariants = await Promise.all(
+        variants.map(async (v) => {
+          if (v.file) {
+            const response = await fetch(
+              `/api/upload?filename=${encodeURIComponent(v.file.name)}`,
+              {
+                method: "POST",
+                body: v.file,
+              },
+            );
+            const blob = await response.json();
+            if (blob.error) throw new Error(blob.error);
+            return { name: v.name, image: blob.url };
+          }
+          return { name: v.name, image: v.image };
+        }),
+      );
+
+      setLoadingMessage("Saving Product Data...");
       const payload = {
         ...formData,
         price: Number(formData.price),
-        variants
+        mainImage: mainImageUrl,
+        variants: updatedVariants,
       };
-      
-      const response = await fetch('/api/products', {
-        method: 'POST',
+      // Remove local helper field before sending
+      delete (payload as any).mainImageFile;
+
+      const response = await fetch("/api/products", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
@@ -101,11 +150,11 @@ export default function AddProductPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong');
+        throw new Error(data.error || "Something went wrong");
       }
 
       setMessage({ type: "success", text: "Product saved successfully!" });
-      
+
       // Reset form
       setFormData({
         name: "",
@@ -115,29 +164,40 @@ export default function AddProductPage() {
         price: "",
         description: "",
         isInStock: true,
+        mainImage: null,
+        mainImageFile: null,
       });
-      setVariants([{ id: Math.random().toString(36).substr(2, 9), name: "", image: null }]);
-      
+      setVariants([
+        { id: Math.random().toString(36).substr(2, 9), name: "", image: null },
+      ]);
     } catch (error: any) {
       console.error(error);
-      setMessage({ type: "error", text: error.message || "Failed to save product" });
+      setMessage({
+        type: "error",
+        text: error.message || "Failed to save product",
+      });
     } finally {
       setIsLoading(false);
+      setLoadingMessage("");
     }
   };
 
   return (
     <div className="w-full max-w-300 mx-auto pb-20 px-3 md:px-4 pt-5">
-      
       {/* Header Area */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div>
-          <Link 
+          <Link
             href="/dashboard/products"
             className="inline-flex items-center gap-1.5 text-slate-400 hover:text-slate-600 transition-colors mb-3 group"
           >
-            <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Back to Inventory</span>
+            <ChevronLeft
+              size={16}
+              className="group-hover:-translate-x-0.5 transition-transform"
+            />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+              Back to Inventory
+            </span>
           </Link>
           <h1 className="text-2xl md:text-[28px] font-black tracking-tight text-slate-900 leading-tight">
             New Product
@@ -148,7 +208,7 @@ export default function AddProductPage() {
         </div>
 
         <div className="flex items-center gap-3">
-           <Link 
+          <Link
             href="/dashboard/products"
             className="px-6 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100 transition-colors bg-white border border-slate-200"
           >
@@ -159,22 +219,26 @@ export default function AddProductPage() {
             disabled={isLoading}
             className="flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-700 transition-colors shadow-lg shadow-blue-50 disabled:opacity-50"
           >
-            <CheckCircle2 size={16} /> {isLoading ? "Saving..." : "Save Product"}
+            <CheckCircle2 size={16} />{" "}
+            {isLoading ? (loadingMessage || "Saving...") : "Save Product"}
           </button>
         </div>
       </div>
 
       {message.text && (
-        <div className={`mb-6 p-4 rounded-xl text-sm font-bold ${message.type === 'error' ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'}`}>
+        <div
+          className={`mb-6 p-4 rounded-xl text-sm font-bold ${message.type === "error" ? "bg-red-50 text-red-600 border border-red-200" : "bg-emerald-50 text-emerald-600 border border-emerald-200"}`}
+        >
           {message.text}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 lg:grid-cols-12 gap-8"
+      >
         {/* Left Column: Core Data */}
         <div className="lg:col-span-8 space-y-8">
-          
           {/* Section: Basic Details */}
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
             <div className="px-8 py-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
@@ -183,12 +247,14 @@ export default function AddProductPage() {
                 Product Information
               </h2>
             </div>
-            
+
             <div className="p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Product Name</label>
-                  <input 
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">
+                    Product Name
+                  </label>
+                  <input
                     type="text"
                     name="name"
                     required
@@ -200,17 +266,23 @@ export default function AddProductPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Brand</label>
-                  <select 
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">
+                    Brand
+                  </label>
+                  <select
                     name="brand"
                     required
                     value={formData.brand}
                     onChange={handleChange}
                     className="w-full bg-white border border-slate-200 rounded-xl px-5 py-4 text-sm font-bold text-slate-800 focus:border-blue-500 transition-all outline-none appearance-none cursor-pointer"
                   >
-                    <option value="" disabled>Select Brand</option>
-                    {BRANDS.map(brand => (
-                      <option key={brand} value={brand}>{brand}</option>
+                    <option value="" disabled>
+                      Select Brand
+                    </option>
+                    {BRANDS.map((brand) => (
+                      <option key={brand} value={brand}>
+                        {brand}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -218,24 +290,32 @@ export default function AddProductPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Nicotine Strength (MG)</label>
-                  <select 
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">
+                    Nicotine Strength (MG)
+                  </label>
+                  <select
                     name="mg"
                     value={formData.mg}
                     onChange={handleChange}
                     className="w-full bg-white border border-slate-200 rounded-xl px-5 py-4 text-sm font-bold text-slate-800 focus:border-blue-500 transition-all outline-none appearance-none cursor-pointer"
                   >
-                    <option value="" disabled>Select MG</option>
-                    {MG_OPTIONS.map(mg => (
-                      <option key={mg} value={mg}>{mg}</option>
+                    <option value="" disabled>
+                      Select MG
+                    </option>
+                    {MG_OPTIONS.map((mg) => (
+                      <option key={mg} value={mg}>
+                        {mg}
+                      </option>
                     ))}
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Description</label>
-                <textarea 
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">
+                  Description
+                </label>
+                <textarea
                   name="description"
                   rows={8}
                   value={formData.description}
@@ -249,6 +329,80 @@ export default function AddProductPage() {
 
           {/* Section: Variants */}
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+            <div className="px-8 py-5 border-b border-slate-100 bg-slate-50/50">
+              <h2 className="text-xs font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                <ImageIcon size={14} className="text-blue-500" />
+                Featured Product Image
+              </h2>
+            </div>
+            <div className="p-8">
+              <div
+                onClick={() => mainImageInputRef.current?.click()}
+                className={`w-full max-w-sm h-64 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all bg-white relative group/img ${
+                  formData.mainImage
+                    ? "border-blue-500"
+                    : "border-slate-200 hover:border-slate-300"
+                }`}
+              >
+                {formData.mainImage ? (
+                  <>
+                    <div className="relative w-full h-full p-4">
+                      <Image
+                        src={formData.mainImage}
+                        alt="Product"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFormData((prev) => ({
+                          ...prev,
+                          mainImage: null,
+                          mainImageFile: null,
+                        }));
+                      }}
+                      className="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-xl shadow-lg opacity-0 group-hover/img:opacity-100 transition-opacity z-10"
+                    >
+                      <X size={16} />
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 group-hover:text-blue-500 transition-colors">
+                      <ImageIcon size={24} />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs font-black text-slate-800 uppercase tracking-widest mb-1">
+                        Upload Main Image
+                      </p>
+                      <p className="text-[10px] font-bold text-slate-400">
+                        Supports shared visuals across flavors
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <input
+                  ref={mainImageInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setFormData((prev) => ({
+                        ...prev,
+                        mainImage: URL.createObjectURL(file),
+                        mainImageFile: file,
+                      }));
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
             <div className="px-8 py-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
               <h2 className="text-xs font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
                 <Layers size={14} className="text-orange-500" />
@@ -265,7 +419,10 @@ export default function AddProductPage() {
 
             <div className="p-8 space-y-6">
               {variants.map((variant) => (
-                <div key={variant.id} className="group p-6 rounded-xl border border-slate-100 hover:border-slate-200 hover:bg-slate-50/30 transition-all relative">
+                <div
+                  key={variant.id}
+                  className="group p-6 rounded-xl border border-slate-100 hover:border-slate-200 hover:bg-slate-50/30 transition-all relative"
+                >
                   {variants.length > 1 && (
                     <button
                       type="button"
@@ -278,39 +435,73 @@ export default function AddProductPage() {
 
                   <div className="flex flex-col md:flex-row gap-6">
                     {/* Variant Image */}
-                    <div 
+                    <div
                       onClick={() => fileInputRefs.current[variant.id]?.click()}
                       className={`w-32 h-32 rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all shrink-0 bg-white ${
-                        variant.image ? "border-blue-500" : "border-slate-200 hover:border-slate-300"
+                        variant.image
+                          ? "border-blue-500"
+                          : "border-slate-200 hover:border-slate-300"
                       }`}
                     >
                       {variant.image ? (
-                        <div className="relative w-full h-full p-2">
-                          <Image src={variant.image} alt="Variant" fill className="object-contain" />
-                        </div>
+                        <>
+                          <div className="relative w-full h-full p-2">
+                            <Image
+                              src={variant.image}
+                              alt="Variant"
+                              fill
+                              className="object-contain"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setVariants((prev) =>
+                                prev.map((v) =>
+                                  v.id === variant.id
+                                    ? { ...v, image: null, file: null }
+                                    : v,
+                                ),
+                              );
+                            }}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white p-1.5 rounded-lg shadow-md z-10"
+                          >
+                            <X size={12} />
+                          </button>
+                        </>
                       ) : (
                         <div className="flex flex-col items-center gap-2">
                           <ImageIcon size={20} className="text-slate-300" />
-                          <span className="text-[10px] font-black text-slate-300 uppercase">Image</span>
+                          <span className="text-[10px] font-black text-slate-300 uppercase">
+                            Image
+                          </span>
                         </div>
                       )}
-                      <input 
-                        ref={el => { fileInputRefs.current[variant.id] = el }}
+                      <input
+                        ref={(el) => {
+                          fileInputRefs.current[variant.id] = el;
+                        }}
                         type="file"
                         className="hidden"
                         accept="image/*"
-                        onChange={(e) => handleVariantImageUpload(variant.id, e)}
+                        onChange={(e) =>
+                          handleVariantImageUpload(variant.id, e)
+                        }
                       />
                     </div>
 
                     {/* Variant Name */}
                     <div className="flex-1 space-y-2">
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Variation Name / Flavor</label>
-                      <input 
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        Variation Name / Flavor (Optional)
+                      </label>
+                      <input
                         type="text"
-                        required
                         value={variant.name}
-                        onChange={(e) => handleVariantNameChange(variant.id, e.target.value)}
+                        onChange={(e) =>
+                          handleVariantNameChange(variant.id, e.target.value)
+                        }
                         placeholder="e.g. Strawberry Ice"
                         className="w-full bg-white border border-slate-200 rounded-xl px-5 py-4 text-sm font-bold text-slate-800 focus:border-blue-500 transition-all outline-none"
                       />
@@ -324,7 +515,6 @@ export default function AddProductPage() {
 
         {/* Right Column: Meta & Pricing */}
         <div className="lg:col-span-4 space-y-8">
-          
           {/* Card: Pricing */}
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
             <div className="px-8 py-5 border-b border-slate-100 bg-slate-50/50">
@@ -335,8 +525,10 @@ export default function AddProductPage() {
             </div>
             <div className="p-8 space-y-6">
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Base Price ($)</label>
-                <input 
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">
+                  Base Price (Rs)
+                </label>
+                <input
                   type="number"
                   name="price"
                   required
@@ -349,12 +541,19 @@ export default function AddProductPage() {
               </div>
 
               <div className="flex items-center justify-between py-4 border-y border-slate-50">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Stock</span>
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                  Active Stock
+                </span>
                 <button
                   type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, isInStock: !prev.isInStock }))}
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      isInStock: !prev.isInStock,
+                    }))
+                  }
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                      formData.isInStock ? "bg-emerald-500" : "bg-slate-200"
+                    formData.isInStock ? "bg-emerald-500" : "bg-slate-200"
                   }`}
                 >
                   <span
@@ -376,22 +575,24 @@ export default function AddProductPage() {
               </h2>
             </div>
             <div className="p-8">
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">Category Group</label>
-              <select 
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">
+                Category Group
+              </label>
+              <select
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
                 className="w-full bg-white border border-slate-200 rounded-xl px-5 py-4 text-sm font-bold text-slate-800 focus:border-blue-500 transition-all outline-none appearance-none cursor-pointer"
               >
-                {CATEGORIES.map(cat => (
-                  <option key={cat.value} value={cat.value}>{cat.label}</option>
+                {CATEGORIES.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
-
         </div>
-
       </form>
     </div>
   );

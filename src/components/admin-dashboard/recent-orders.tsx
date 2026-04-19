@@ -1,45 +1,20 @@
-const orders = [
-  {
-    id: "#ORD-9402",
-    customer: "John Doe",
-    initial: "JD",
-    date: "Oct 24, 2023",
-    amount: "$124.50",
-    status: "Processing",
-    color: "blue",
-  },
-  {
-    id: "#ORD-9398",
-    customer: "Sarah Miller",
-    initial: "SM",
-    date: "Oct 23, 2023",
-    amount: "$56.00",
-    status: "Shipped",
-    color: "orange",
-  },
-  {
-    id: "#ORD-9395",
-    customer: "Robert Taylor",
-    initial: "RT",
-    date: "Oct 23, 2023",
-    amount: "$245.99",
-    status: "Delivered",
-    color: "emerald",
-  },
-  {
-    id: "#ORD-9391",
-    customer: "Anna Brown",
-    initial: "AB",
-    date: "Oct 22, 2023",
-    amount: "$89.20",
-    status: "Delivered",
-    color: "emerald",
-  },
-];
+import Link from "next/link";
 
-const RecentOrders = () => {
+interface OrderItem {
+  id: string;
+  customer: string;
+  initial: string;
+  date: string;
+  amount: string;
+  status: string;
+  color: string;
+}
+
+const RecentOrders = ({ orders }: { orders?: OrderItem[] }) => {
+  const displayOrders = orders || [];
+
   return (
-    <div className="bg-white rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm overflow-hidden w-full">
+    <div className="bg-white rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm overflow-hidden w-full flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-3 md:p-4 pb-4">
         <h3 className="text-lg md:text-xl font-black text-slate-800 tracking-tight">
@@ -48,7 +23,7 @@ const RecentOrders = () => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto flex-1">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-gray-50 text-[11px] font-black text-gray-400 uppercase tracking-[0.15em]">
@@ -60,7 +35,7 @@ const RecentOrders = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {orders.map((order) => (
+            {displayOrders.map((order) => (
               <tr
                 key={order.id}
                 className="hover:bg-gray-50/50 transition-colors group"
@@ -70,7 +45,11 @@ const RecentOrders = () => {
                 </td>
                 <td className="px-8 py-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-[11px] font-black text-[#4A90E2]">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black
+                      ${order.color === "blue" ? "bg-blue-50 text-blue-600" : ""}
+                      ${order.color === "orange" ? "bg-orange-50 text-orange-600" : ""}
+                      ${order.color === "emerald" ? "bg-emerald-50 text-emerald-600" : ""}
+                    `}>
                       {order.initial}
                     </div>
                     <span className="text-[14px] font-bold text-slate-700">
@@ -100,6 +79,21 @@ const RecentOrders = () => {
             ))}
           </tbody>
         </table>
+        {displayOrders.length === 0 && (
+          <div className="py-10 text-center text-slate-400 text-sm font-bold uppercase tracking-widest">
+            No orders found
+          </div>
+        )}
+      </div>
+
+      {/* Button at the bottom */}
+      <div className="p-4 border-t border-gray-50">
+        <Link
+          href="/dashboard/orders"
+          className="block w-full text-center py-3.5 bg-blue-50/50 text-[#4A90E2] text-xs font-bold uppercase tracking-widest rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors"
+        >
+          View All Orders
+        </Link>
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { Search, User } from "lucide-react";
 
 const AdminHeader = () => {
   const pathname = usePathname();
@@ -23,45 +22,6 @@ const AdminHeader = () => {
         <p className="text-[11px] md:text-[13px] font-medium text-slate-400 mt-0.5 hidden sm:block">
           Welcome back, Admin.
         </p>
-      </div>
-
-      {/* Right Side: Search & Profile */}
-      <div className="flex items-center gap-3 md:gap-6">
-        {/* Search Icon only on mobile, full bar on desktop */}
-        <button className="p-2.5 md:hidden text-slate-600 hover:bg-gray-50 rounded-xl">
-          <Search size={20} />
-        </button>
-
-        {/* Desktop Search Bar */}
-        <div className="relative hidden md:block w-48 lg:w-72 transition-all">
-          <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-            size={16}
-          />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full pl-11 pr-4 py-2.5 bg-white border-2 border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-gray-400"
-          />
-        </div>
-
-        {/* Vertical Divider - Hidden on very small screens */}
-        <div className="h-8 w-px bg-gray-100 mx-1 hidden xs:block"></div>
-
-        {/* User Profile */}
-        <div className="flex items-center gap-2 md:gap-3">
-          <div className="text-right hidden lg:block">
-            <p className="text-sm font-black text-slate-800 leading-none">
-              Alex Rivera
-            </p>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">
-              Super Admin
-            </p>
-          </div>
-          <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500 overflow-hidden border border-gray-100 cursor-pointer hover:border-slate-300 transition-colors">
-            <User size={20} />
-          </div>
-        </div>
       </div>
     </header>
   );

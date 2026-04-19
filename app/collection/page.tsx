@@ -10,6 +10,7 @@ interface Product {
   category: string;
   price: number;
   isInStock: boolean;
+  mainImage: string | null;
   variants: {
     name: string;
     image: string | null;
@@ -21,14 +22,15 @@ interface Product {
 export default async function ProductBrowserPage({
   searchParams,
 }: {
-  searchParams: Promise<{ brand?: string; category?: string }>;
+  searchParams: Promise<{ brand?: string; category?: string; search?: string }>;
 }) {
-  const { brand, category } = await searchParams;
+  const { brand, category, search } = await searchParams;
 
   // Construct API URL with filters
   const params = new URLSearchParams();
   if (brand) params.set("brand", brand);
   if (category) params.set("category", category);
+  if (search) params.set("search", search);
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   const apiUrl = `${baseUrl}/api/products${params.toString() ? `?${params.toString()}` : ""}`;
@@ -56,7 +58,7 @@ export default async function ProductBrowserPage({
       <div className="flex flex-col lg:flex-row gap-6 md:gap-12">
         <ProductSidebar />
 
-        <div className="flex-grow">
+        <div className="grow">
           <ProductHeader count={totalCount} />
 
           {/* GRID UPDATE: 
@@ -70,8 +72,10 @@ export default async function ProductBrowserPage({
                 key={p._id}
                 name={p.name}
                 price={p.price}
-                image={p.variants[0]?.image || "/cards/card6.webp"}
+                slug={p.slug}
+                image={p.mainImage || p.variants[0]?.image || "/cards/card6.webp"}
                 isNew={new Date(p.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)}
+                isInStock={p.isInStock}
               />
             ))}
           </div>

@@ -12,16 +12,15 @@ import {
 } from "recharts";
 import { motion } from "framer-motion";
 
-const data = [
-  { name: "JAN", revenue: 4000 },
-  { name: "FEB", revenue: 3000 },
-  { name: "MAR", revenue: 2000 },
-  { name: "APR", revenue: 6000 },
-  { name: "MAY", revenue: 1000 },
-  { name: "JUN", revenue: 7000 },
-];
+interface RevenueData {
+  name: string;
+  revenue: number;
+}
 
-const RevenueForecastChart = () => {
+const RevenueForecastChart = ({ data }: { data?: RevenueData[] }) => {
+  // Use provided data or fallback to empty default
+  const chartData = data || [];
+
   return (
     /* Reduced padding from p-8 to p-5 on mobile */
     <div className="bg-white p-3 md:p-4 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm flex-1 flex flex-col h-full min-h-80 md:min-h-105">
@@ -45,7 +44,7 @@ const RevenueForecastChart = () => {
       >
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
-            data={data}
+            data={chartData}
             /* Margin adjustment to prevent labels from cutting off */
             margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
           >
@@ -69,7 +68,7 @@ const RevenueForecastChart = () => {
 
             {/* Tooltip: simplified for touch devices */}
             <Tooltip
-              cursor={{ stroke: "#4A90E2", strokeWidth: 1 }}
+              cursor={{ stroke: "#10b981", strokeWidth: 1 }}
               contentStyle={{
                 borderRadius: "0.75rem",
                 border: "1px solid #E5E7EB",
@@ -82,7 +81,7 @@ const RevenueForecastChart = () => {
             <Area
               type="monotone"
               dataKey="revenue"
-              stroke="#4A90E2"
+              stroke="#10b981"
               strokeWidth={2.5}
               fill="url(#colorRevenue)"
               isAnimationActive={true}
@@ -91,8 +90,8 @@ const RevenueForecastChart = () => {
 
             <defs>
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#4A90E2" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#4A90E2" stopOpacity={0} />
+                <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
               </linearGradient>
             </defs>
           </AreaChart>
