@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import Image from "next/image";
 import { Pencil, Plus, Package, AlertCircle, Trash2, Search } from "lucide-react";
 import StatCard from "@/src/components/admin-dashboard/sale-cards";
@@ -23,7 +23,7 @@ interface Product {
   variants: Variant[];
 }
 
-const ProductListingPage = () => {
+const ProductListingContent = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [stats, setStats] = useState({ total: 0, outOfStock: 0 });
   const [isLoading, setIsLoading] = useState(true);
@@ -496,4 +496,17 @@ const ProductListingPage = () => {
   );
 };
 
-export default ProductListingPage;
+export default function ProductListingPage() {
+  return (
+    <Suspense fallback={
+      <div className="w-full h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-sm font-black text-slate-500 uppercase tracking-widest">Loading Products...</p>
+        </div>
+      </div>
+    }>
+      <ProductListingContent />
+    </Suspense>
+  );
+}
