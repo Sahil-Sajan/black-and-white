@@ -1,17 +1,40 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronRight, SlidersHorizontal, X } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const FilterSection = ({
     title,
+    paramKey,
     options,
-    isOpen: initialOpen = false
+    isOpen: initialOpen = false,
+    children
 }: {
     title: string;
+    paramKey?: string;
     options?: string[];
-    isOpen?: boolean
+    isOpen?: boolean;
+    children?: React.ReactNode;
 }) => {
     const [isOpen, setIsOpen] = useState(initialOpen);
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    const activeValue = paramKey ? searchParams.get(paramKey) : null;
+
+    const handleCheck = (opt: string) => {
+        if (!paramKey) return;
+        const params = new URLSearchParams(searchParams.toString());
+        
+        if (opt === "All") {
+            params.delete(paramKey);
+        } else if (activeValue === opt) {
+            params.delete(paramKey);
+        } else {
+            params.set(paramKey, opt);
+        }
+        router.push(`/collection?${params.toString()}`, { scroll: false });
+    };
 
     return (
         <div className="border-b border-zinc-200 py-5">
@@ -31,11 +54,29 @@ const FilterSection = ({
 
             {isOpen && options && (
                 <div className="mt-5 space-y-3 max-h-60 overflow-y-auto pr-2 no-scrollbar animate-in fade-in slide-in-from-top-1 duration-200">
+                    {/* All Option */}
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                        <input
+                            type="checkbox"
+                            className="peer hidden"
+                            checked={!activeValue}
+                            onChange={() => handleCheck("All")}
+                        />
+                        <div className="h-[14px] w-[14px] border border-zinc-300 rounded-[2px] peer-checked:bg-black peer-checked:border-black transition-all flex items-center justify-center">
+                            <div className="h-1.5 w-1.5 bg-white rounded-full opacity-0 peer-checked:opacity-100" />
+                        </div>
+                        <span className="text-[13px] font-medium text-zinc-500 group-hover:text-black transition-colors">
+                            All
+                        </span>
+                    </label>
+
                     {options.map((opt) => (
                         <label key={opt} className="flex items-center gap-3 cursor-pointer group">
                             <input
                                 type="checkbox"
                                 className="peer hidden"
+                                checked={activeValue === opt}
+                                onChange={() => handleCheck(opt)}
                             />
                             <div className="h-[14px] w-[14px] border border-zinc-300 rounded-[2px] peer-checked:bg-black peer-checked:border-black transition-all flex items-center justify-center">
                                 <div className="h-1.5 w-1.5 bg-white rounded-full opacity-0 peer-checked:opacity-100" />
@@ -47,33 +88,114 @@ const FilterSection = ({
                     ))}
                 </div>
             )}
+
+            {isOpen && children && (
+                <div className="mt-5 animate-in fade-in slide-in-from-top-1 duration-200">
+                    {children}
+                </div>
+            )}
         </div>
     );
 };
 
 export const ProductSidebar = () => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
-    const FilterContent = () => (
-        <>
-            <FilterSection
-                title="Brand"
-                isOpen={true}
-                options={[
-                    'Solaris', 'South', 'Spaceman', 'Suorin', 'SWFT',
-                    'True Story', 'Tyson 2.0', 'Uwell', 'Vapengin'
-                ]}
-            />
-            <FilterSection title="Price" />
-            <FilterSection title="Product Type" />
-            <FilterSection title="Starter Kit Type" />
-            <FilterSection title="Capacity" />
-            <FilterSection title="Nicotine Strength" />
-            <FilterSection title="Flavor Profile" />
-            <FilterSection title="Color" />
-            <FilterSection title="Wattage" />
-        </>
-    );
+    const [minPriceTemp, setMinPriceTemp] = useState(searchParams.get('minPrice') || '');
+    const [maxPriceTemp, setMaxPriceTemp] = useState(searchParams.get('maxPrice') || '');
+
+    const [brands, setBrands] = useState<string[]>([]);
+    const [categories, setCategories] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchFilters = async () => {
+            try {
+                const res = await fetch('/api/products');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.products) {
+                        const uniqueBrands = Array.from(new Set(data.products.map((p: any) => p.brand).filter(Boolean))) as string[];
+                        const uniqueCats = Array.from(new Set(data.products.map((p: any) => p.category).filter(Boolean))) as string[];
+                        setBrands(uniqueBrands.sort());
+                        setCategories(uniqueCats.sort());
+                    }
+                }
+            } catch (error) {
+                console.error("Filter fetch error:", error);
+            }
+        };
+        fetchFilters();
+    }, []);
+
+    const handlePriceFilter = (e: React.FormEvent) => {
+        e.preventDefault();
+        const params = new URLSearchParams(searchParams.toString());
+        if (minPriceTemp) params.set('minPrice', minPriceTemp); else params.delete('minPrice');
+        if (maxPriceTemp) params.set('maxPrice', maxPriceTemp); else params.delete('maxPrice');
+        router.push(`/collection?${params.toString()}`, { scroll: false });
+    };
+
+    const FilterContent = () => {
+        const categoriesInUrl = searchParams.get('category')?.toLowerCase() || '';
+        const isLiquidActive = categoriesInUrl.includes('liquid') || categoriesInUrl.includes('juice') || categoriesInUrl.includes('flavor');
+
+        return (
+            <>
+                <FilterSection 
+                    title="Brand" 
+                    paramKey="brand"
+                    isOpen={true} 
+                    options={['OXVA', 'VOOPOO', 'VAPORESSO', 'UWLL', 'PAVA']} 
+                />
+                
+                <FilterSection title="Price" isOpen={true}>
+                    <form onSubmit={handlePriceFilter} className="flex gap-2 items-center">
+                        <input 
+                            type="number" 
+                            value={minPriceTemp}
+                            onChange={(e) => setMinPriceTemp(e.target.value)}
+                            placeholder="Min" 
+                            className="w-full text-xs p-3 border border-zinc-200 rounded-sm outline-none focus:border-black bg-zinc-50" 
+                        />
+                        <span className="text-zinc-400">-</span>
+                        <input 
+                            type="number"
+                            value={maxPriceTemp}
+                            onChange={(e) => setMaxPriceTemp(e.target.value)} 
+                            placeholder="Max" 
+                            className="w-full text-xs p-3 border border-zinc-200 rounded-sm outline-none focus:border-black bg-zinc-50" 
+                        />
+                        <button type="submit" className="bg-black text-white px-4 py-2.5 text-[10px] font-bold uppercase rounded-sm hover:bg-zinc-800 transition-colors">
+                            Go
+                        </button>
+                    </form>
+                </FilterSection>
+                
+                <FilterSection 
+                    title="Product Type" 
+                    paramKey="category"
+                    options={categories} 
+                />
+                
+                {isLiquidActive && (
+                    <FilterSection 
+                        title="Nicotine Strength" 
+                        paramKey="mg"
+                        options={['0mg', '3mg', '6mg', '12mg', '20mg', '25mg', '30mg', '35mg', '50mg', '55mg', '60mg']} 
+                    />
+                )}
+                {isLiquidActive && (
+                    <FilterSection 
+                        title="Capacity" 
+                        paramKey="capacity"
+                        options={['10ml', '30ml', '60ml', '100ml', '120ml']} 
+                    />
+                )}
+            </>
+        );
+    };
 
     return (
         <>

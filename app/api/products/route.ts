@@ -10,10 +10,31 @@ export async function GET(req: Request) {
     const brand = searchParams.get("brand");
     const category = searchParams.get("category");
     const search = searchParams.get("search");
+    const capacity = searchParams.get("capacity");
+    const mg = searchParams.get("mg");
+
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
 
     const query: QueryFilter<IProduct> = {};
-    if (brand) query.brand = brand;
-    if (category) query.category = category;
+    if (brand) {
+      query.brand = { $regex: brand, $options: "i" };
+    }
+    if (category) {
+      query.category = { $regex: category, $options: "i" };
+    }
+    if (capacity) {
+        query.name = { $regex: capacity, $options: "i" }; // Fallback to name search if field missing
+    }
+    if (mg) {
+        query.mg = mg;
+    }
+    
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -22,8 +43,15 @@ export async function GET(req: Request) {
       ];
     }
 
+    const sort = searchParams.get("sort");
+    let sortOptions: any = { createdAt: -1 }; // Default: Newest
+
+    if (sort === "price-asc") sortOptions = { price: 1 };
+    if (sort === "price-desc") sortOptions = { price: -1 };
+    if (sort === "latest") sortOptions = { createdAt: -1 };
+
     // Filtered products
-    const products = await Product.find(query).sort({ createdAt: -1 });
+    const products = await Product.find(query).sort(sortOptions);
 
     // Global stats (calculate based on all products regardless of filters)
     const allProducts = await Product.find({});

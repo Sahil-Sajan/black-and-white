@@ -38,13 +38,13 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product, onVariantChange }) =
   const [isAdded, setIsAdded] = useState(false);
 
   const handleAddToCart = () => {
-    const variant = product.variants[selectedVariant];
+    const variant = product.variants?.[selectedVariant];
     addToCart({
-      id: `${product._id}-${variant._id}`, // Unique ID for product+variant combo
+      id: variant ? `${product._id}-${variant._id}` : product._id,
       name: product.name,
       price: product.price,
-      variant: variant.name,
-      image: variant.image || "/cards/card1.webp",
+      variant: variant?.name || '',
+      image: variant?.image || "/cards/card1.webp",
       quantity: quantity
     });
 
@@ -87,35 +87,34 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product, onVariantChange }) =
         <span className="text-3xl font-black text-slate-950">
           Rs {product.price.toLocaleString()}
         </span>
-        <span className="text-sm font-bold text-slate-400 line-through">
-          Rs {(product.price * 1.15).toLocaleString()}
-        </span>
       </div>
 
-      {/* Variants */}
-      <div className="space-y-4">
-        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-          Select Variant: <span className="text-slate-900">{product.variants[selectedVariant].name}</span>
-        </label>
-        <div className="flex flex-wrap gap-3">
-          {product.variants.map((v, idx) => (
-            <button
-              key={v._id}
-              onClick={() => {
-                setSelectedVariant(idx);
-                if (onVariantChange) onVariantChange(v.image);
-              }}
-              className={`px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all ${
-                selectedVariant === idx 
-                ? "bg-slate-900 text-white shadow-xl shadow-slate-200" 
-                : "bg-white border border-slate-200 text-slate-500 hover:border-slate-950 hover:text-slate-950"
-              }`}
-            >
-              {v.name}
-            </button>
-          ))}
+      {/* Variants - only render if variants exist */}
+      {product.variants && product.variants.length > 0 && (
+        <div className="space-y-4">
+          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+            Select Variant: <span className="text-slate-900">{product.variants[selectedVariant]?.name}</span>
+          </label>
+          <div className="flex flex-wrap gap-3">
+            {product.variants.map((v, idx) => (
+              <button
+                key={v._id}
+                onClick={() => {
+                  setSelectedVariant(idx);
+                  if (onVariantChange) onVariantChange(v.image);
+                }}
+                className={`px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all border ${
+                  selectedVariant === idx 
+                  ? "bg-white text-black border-black shadow-sm" 
+                  : "bg-white border-slate-200 text-slate-400 hover:border-black hover:text-black"
+                }`}
+              >
+                {v.name}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Quantity & Add to Cart */}
       <div className="space-y-6 pt-4">
