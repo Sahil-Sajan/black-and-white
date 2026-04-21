@@ -15,10 +15,10 @@ import 'swiper/css/effect-fade';
 const HeroSlider = () => {
     // Array for your 6 images
     const slides = [
-    { id: 1, img: '/crousel/Gemini_Generated_Image_batliibatliibatl.png', title: "YOUR NEXT FAVORITE MOD HAS ARRIVED", link: "/box-mods" },
-    { id: 2, img: '/crousel/Gemini_Generated_Image_h5zgjch5zgjch5zg.png', title: "EXPLORE THE LATEST RELEASES", link: "/new-arrivals" },
-    { id: 3, img: '/crousel/Gemini_Generated_Image_sv479dsv479dsv47.png', title: "PREMIUM E-LIQUIDS COLLECTION", link: "/e-liquids" },
-  ];
+        { id: 1, img: '/crousel/c1.jpeg', title: "YOUR NEXT FAVORITE MOD HAS ARRIVED", link: "/box-mods" },
+        { id: 2, img: '/crousel/c2.jpeg', title: "EXPLORE THE LATEST RELEASES", link: "/new-arrivals" },
+        { id: 3, img: '/crousel/c3.jpeg', title: "PREMIUM E-LIQUIDS COLLECTION", link: "/e-liquids" },
+    ];
 
     return (
         <div className="relative w-full group overflow-hidden">
@@ -36,7 +36,7 @@ const HeroSlider = () => {
                 }}
                 autoplay={{ delay: 4000, disableOnInteraction: false }}
                 loop={true}
-                className="w-full h-[400px] md:h-[650px]"
+                className="w-full h-[400px] md:h-[730px]"
             >
                 {slides.map((slide) => (
                     <SwiperSlide key={slide.id}>

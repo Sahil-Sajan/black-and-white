@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+
 import { banner } from './images';
 
 export const NicotineWarningMarquee = () => {
@@ -27,21 +28,20 @@ export const NicotineWarningMarquee = () => {
                     ))}
                 </div>
             </div>
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-transparent"></div>
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white to-transparent"></div>
+
         </div>
     );
-};
-
-export const DeliveryBanner: React.FC = () => {
+}; export const DeliveryBanner: React.FC = () => {
     return (
         <div className="hidden md:block w-full">
-            <div className="max-w-[1400px] mx-auto w-full h-[500px] overflow-hidden relative">
+
+            <div className="mx-auto w-11/12 max-w-[1700px] relative overflow-hidden aspect-[21/6]">
                 <Image
                     src={banner}
-                    alt="Same-Day Delivery in Karachi for All Your Needs - Orders before 3:00 PM"
+                    alt="Same-Day Delivery in Karachi"
                     fill
-                    className="mt-20 object-cover"
+                    className="object-contain"
+                    priority
                 />
             </div>
         </div>
