@@ -1,43 +1,72 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
-import { Eye, ShoppingCart } from 'lucide-react';
+import { Eye, ShoppingCart, Loader2 } from 'lucide-react';
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-type Category = 'Disposable Device' | 'Pod Devices' | 'Starter Kits';
+type Category = 'Disposable Device' | 'Kits';
+
+interface Product {
+    _id: string;
+    name: string;
+    slug: string;
+    brand?: string;
+    category?: string;
+    price: number;
+    isInStock: boolean;
+    variants?: { name?: string; image?: string }[];
+    mainImage?: string;
+}
 
 const VapesCarousel = () => {
-    const categories: Category[] = ['Disposable Device', 'Pod Devices', 'Starter Kits'];
+    const categories: Category[] = ['Disposable Device', 'Kits'];
     const [activeTab, setActiveTab] = useState<Category>('Disposable Device');
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const products = [
-        { id: 'vape', brand: 'OXVA', name: 'OXVA XLIM PRO STARTER KIT', price: '6,499', oldPrice: '7,499', category: 'Starter Kits', img: '/vape.avif' },
-        { id: 'vape2', brand: 'UWELL', name: 'UWELL CALIBURN G3 KIT', price: '5,299', oldPrice: '5,999', category: 'Starter Kits', img: '/vape2.avif' },
-        { id: 'vape3', brand: 'GEEKVAPE', name: 'GEEKVAPE WENAX Q PRO', price: '4,899', oldPrice: '5,499', category: 'Starter Kits', img: '/vape3.avif' },
-        { id: 'vape4', brand: 'VOOPOO', name: 'VOOPOO ARGUS P2 KIT', price: '5,799', oldPrice: '6,299', category: 'Starter Kits', img: '/vape4.avif' },
-        { id: 'vape5', brand: 'VAPORESSO', name: 'VAPORESSO XROS 4 MINI', price: '4,199', oldPrice: '4,699', category: 'Starter Kits', img: '/vape5.avif' },
-        { id: 'vape6', brand: 'SMOK', name: 'SMOK NOVO 5 KIT', price: '4,999', oldPrice: '5,599', category: 'Starter Kits', img: '/vape6.avif' },
-        { id: 'vape7', brand: 'LOST VAPE', name: 'LOST VAPE URSA NANO PRO 2', price: '5,399', oldPrice: '5,999', category: 'Starter Kits', img: '/vape7.avif' },
-        { id: 1, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE MANGO S...', price: '3,599', oldPrice: '3,999', category: 'Disposable Device', img: '/cards/card1.webp' },
-        { id: 2, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE BLUEBERR...', price: '3,599', oldPrice: '3,999', category: 'Disposable Device', img: '/cards/card2.webp' },
-        { id: 3, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE GRAPE PE...', price: '3,599', oldPrice: '3,999', category: 'Disposable Device', img: '/cards/card3.jpg' },
-        { id: 4, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE BLUERAZZ...', price: '3,599', oldPrice: '3,999', category: 'Disposable Device', img: '/cards/card4.jpg' },
-        { id: 5, brand: 'SLUGGER', name: 'SLUGGER DISPOSABLE WATERME...', price: '3,599', oldPrice: '3,999', category: 'Disposable Device', img: '/cards/card5.webp' },
-        { id: 'pod1', brand: 'SLUGGER', name: 'SLUGGER POD MANGO S...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/vape.avif' },
-        { id: 'pod2', brand: 'SLUGGER', name: 'SLUGGER POD BLUEBERR...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/vape4.avif' },
-        { id: 'pod3', brand: 'SLUGGER', name: 'SLUGGER POD GRAPE PE...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/vape2.avif' },
-        { id: 'pod4', brand: 'SLUGGER', name: 'SLUGGER POD BLUERAZZ...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/cards/card3.jpg' },
-        { id: 'pod5', brand: 'SLUGGER', name: 'SLUGGER POD WATERME...', price: '3,599', oldPrice: '3,999', category: 'Pod Devices', img: '/cards/card5.webp' },
-    ];
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const res = await fetch('/api/products');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.products) {
+                        setProducts(data.products);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch products:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProducts();
+    }, []);
 
-    const filteredProducts = products.filter(p => p.category === activeTab);
+    const filteredProducts = useMemo(() => {
+        return products.filter((p) => {
+            const cat = p.category?.toLowerCase() || '';
+            const name = p.name?.toLowerCase() || '';
+
+            const isDisposable = cat.includes('disposable') || name.includes('disposable');
+            const isKit = cat.includes('kit') || name.includes('kit') || cat === 'kits';
+
+            if (activeTab === 'Disposable Device') {
+                return isDisposable;
+            } else if (activeTab === 'Kits') {
+                return isKit && !isDisposable;
+            }
+            return false;
+        });
+    }, [products, activeTab]);
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-6 md:py-10 font-sans group">
@@ -62,60 +91,78 @@ const VapesCarousel = () => {
 
             {/* Swiper Slider */}
             <div className="relative px-2 md:px-8">
-                <Swiper
-                    modules={[Navigation, Pagination]}
-                    spaceBetween={10}
-                    slidesPerView={1} // Base setting for mobile
-                    navigation={{
-                        nextEl: '.swiper-button-next-custom',
-                        prevEl: '.swiper-button-prev-custom',
-                    }}
-                    pagination={{ clickable: true, el: '.custom-pagination' }}
-                    breakpoints={{
-                        // Changed 480 to 640 to keep single card on small/medium mobile phones
-                        640: { slidesPerView: 2, spaceBetween: 15 },
-                        768: { slidesPerView: 3, spaceBetween: 20 },
-                        1024: { slidesPerView: 4, spaceBetween: 20 },
-                        1280: { slidesPerView: 5, spaceBetween: 20 },
-                    }}
-                    className="pb-12"
-                >
-                    {filteredProducts.map((product) => (
-                        <SwiperSlide key={product.id}>
-                            <div className="bg-white p-2 border border-transparent md:hover:border-gray-100 md:hover:shadow-lg transition-all duration-300 group/card relative rounded-sm h-full flex flex-col">
-                                <div className="aspect-square mb-3 md:mb-4 relative flex items-center justify-center bg-[#f9f9f9] rounded-sm overflow-hidden">
-                                    <Image
-                                        src={product.img}
-                                        alt={product.name}
-                                        fill
-                                        className="object-contain transition-transform duration-500 md:group-hover/card:scale-110 p-4"
-                                    />
-                                    <div className="absolute inset-0 flex items-end justify-center pb-4 translate-y-4 opacity-0 md:group-hover/card:opacity-100 md:group-hover/card:translate-y-0 transition-all duration-300 bg-white/30 backdrop-blur-[2px] z-10">
-                                        <div className="flex gap-2">
-                                            <button className="flex items-center gap-1 text-[9px] font-bold text-gray-800 bg-white/90 px-2 py-1.5 rounded-sm shadow-sm hover:bg-black hover:text-white transition-colors">
-                                                <Eye size={12} /> View
-                                            </button>
-                                            <button className="flex items-center gap-1 text-[9px] font-bold text-gray-800 bg-white/90 px-2 py-1.5 rounded-sm shadow-sm hover:bg-black hover:text-white transition-colors">
-                                                <ShoppingCart size={12} /> Add to Cart
-                                            </button>
+                {loading ? (
+                    <div className="py-20 flex flex-col justify-center items-center gap-3 text-gray-500">
+                        <Loader2 className="animate-spin text-black" size={24} />
+                        <span className="text-xs font-bold tracking-widest uppercase">Loading {activeTab}...</span>
+                    </div>
+                ) : filteredProducts.length === 0 ? (
+                    <div className="py-20 flex justify-center items-center text-gray-500 text-sm font-bold tracking-widest uppercase">
+                        No products found for {activeTab}.
+                    </div>
+                ) : (
+                    <Swiper
+                        modules={[Navigation, Pagination]}
+                        spaceBetween={10}
+                        slidesPerView={1}
+                        navigation={{
+                            nextEl: '.swiper-button-next-custom',
+                            prevEl: '.swiper-button-prev-custom',
+                        }}
+                        pagination={{ clickable: true, el: '.custom-pagination' }}
+                        breakpoints={{
+                            640: { slidesPerView: 2, spaceBetween: 15 },
+                            768: { slidesPerView: 3, spaceBetween: 20 },
+                            1024: { slidesPerView: 4, spaceBetween: 20 },
+                            1280: { slidesPerView: 5, spaceBetween: 20 },
+                        }}
+                        className="pb-12"
+                    >
+                        {filteredProducts.map((product) => {
+                            const imageUrl = product.mainImage || product.variants?.[0]?.image || '/cards/card6.webp';
+
+                            return (
+                                <SwiperSlide key={product._id}>
+                                    <div className="bg-white p-2 border border-transparent md:hover:border-gray-100 md:hover:shadow-lg transition-all duration-300 group/card relative rounded-sm h-full flex flex-col">
+                                        <div className="aspect-square mb-3 md:mb-4 relative flex items-center justify-center bg-[#f9f9f9] rounded-sm overflow-hidden">
+                                            <Image
+                                                src={imageUrl}
+                                                alt={product.name}
+                                                fill
+                                                className="object-contain transition-transform duration-500 md:group-hover/card:scale-110 p-4"
+                                            />
+                                            <div className="absolute inset-0 flex items-end justify-center pb-4 translate-y-4 opacity-0 md:group-hover/card:opacity-100 md:group-hover/card:translate-y-0 transition-all duration-300 bg-white/30 backdrop-blur-[2px] z-10">
+                                                <div className="flex gap-2">
+                                                    <Link
+                                                        href={`/collection/${product.slug}`}
+                                                        className="flex items-center gap-1 text-[9px] font-bold text-gray-800 bg-white/90 px-2 py-1.5 rounded-sm shadow-sm hover:bg-black hover:text-white transition-colors"
+                                                    >
+                                                        <Eye size={12} /> View
+                                                    </Link>
+                                                    <button className="flex items-center gap-1 text-[9px] font-bold text-gray-800 bg-white/90 px-2 py-1.5 rounded-sm shadow-sm hover:bg-black hover:text-white transition-colors">
+                                                        <ShoppingCart size={12} /> Add to Cart
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-2 text-center pb-2">
+                                            <p className="text-[8px] md:text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">{product.brand || product.category || 'VAPE'}</p>
+                                            <Link href={`/collection/${product.slug}`}>
+                                                <h3 className="text-[10px] md:text-[11px] font-bold text-gray-800 uppercase leading-tight h-8 mb-2 px-1 hover:text-gray-500 transition-colors">
+                                                    {product.name}
+                                                </h3>
+                                            </Link>
+                                            <div className="flex items-baseline justify-center gap-2">
+                                                <span className="text-black font-bold text-xs md:text-sm">Rs.{product.price?.toLocaleString()}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div className="mt-2 text-center pb-2">
-                                    <p className="text-[8px] md:text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">{product.brand}</p>
-                                    <h3 className="text-[10px] md:text-[11px] font-bold text-gray-800 uppercase leading-tight h-8 mb-2 px-1">
-                                        {product.name}
-                                    </h3>
-                                    <div className="flex items-baseline justify-center gap-2">
-                                        <span className="text-black font-bold text-xs md:text-sm">Rs.{product.price}</span>
-                                        <span className="text-gray-400 line-through text-[9px] md:text-[10px]">Rs.{product.oldPrice}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
+                                </SwiperSlide>
+                            );
+                        })}
+                    </Swiper>
+                )}
 
                 <button className="swiper-button-prev-custom hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 text-gray-400 hover:text-black transition-colors">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
@@ -127,9 +174,9 @@ const VapesCarousel = () => {
 
             <div className="flex flex-col items-center mt-4 md:mt-8 gap-4">
                 <div className="custom-pagination flex justify-center"></div>
-                <button className="bg-black text-white px-8 md:px-10 py-2.5 md:py-3 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors">
+                <Link href="/collection" className="bg-black text-white px-8 md:px-10 py-2.5 md:py-3 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors">
                     View All
-                </button>
+                </Link>
             </div>
 
             <style jsx global>{`

@@ -1,33 +1,24 @@
 "use client"
 
 import React, { useState } from 'react';
-
-// Define types for the props
-interface Tab {
-    label: string;
-    count?: number; // Optional review count
-    content: React.ReactNode;
-}
+import { Star } from 'lucide-react';
 
 interface ProductTabsProps {
-    description: React.ReactNode; // Content for the Description tab
-    specifications: React.ReactNode; // Content for the Specifications tab
-    reviewsCount: number; // Number of reviews for the Reviews tab label
-    reviewsList: React.ReactNode; // List of actual reviews (maybe a map from data)
+    description: React.ReactNode;
+    reviewsList: React.ReactNode;
+    reviewsCount: number;
 }
 
 const ProductTabs: React.FC<ProductTabsProps> = ({
     description,
-    specifications,
-    reviewsCount,
     reviewsList,
+    reviewsCount,
 }) => {
     const [activeTab, setActiveTab] = useState(0);
 
-    const tabs: Tab[] = [
+    const tabs = [
         { label: 'Description', content: description },
-        { label: 'Specifications', content: specifications },
-        { label: 'Reviews', count: reviewsCount, content: reviewsList },
+        { label: `Reviews`, count: reviewsCount, content: reviewsList },
     ];
 
     return (
@@ -40,14 +31,19 @@ const ProductTabs: React.FC<ProductTabsProps> = ({
                         onClick={() => setActiveTab(index)}
                         className={`
               text-[11px] font-black uppercase tracking-widest px-8 pb-4 -mb-px 
-              transition-all duration-200 border-b-2 whitespace-nowrap
+              transition-all duration-200 border-b-2 whitespace-nowrap flex items-center gap-2
               ${activeTab === index
                                 ? 'text-black border-black'
                                 : 'text-zinc-400 border-transparent hover:text-black hover:border-zinc-200'
                             }
             `}
                     >
-                        {tab.label} {tab.count ? `(${tab.count})` : ''}
+                        {tab.label}
+                        {tab.count !== undefined && (
+                            <span className="bg-zinc-100 text-zinc-600 text-[9px] font-black rounded-full px-2 py-0.5">
+                                {tab.count}
+                            </span>
+                        )}
                     </button>
                 ))}
             </nav>
@@ -60,4 +56,4 @@ const ProductTabs: React.FC<ProductTabsProps> = ({
     );
 };
 
-export default ProductTabs;
+export default ProductTabs;

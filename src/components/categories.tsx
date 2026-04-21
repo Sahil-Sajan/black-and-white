@@ -15,6 +15,7 @@ interface Product {
   price: number;
   isInStock: boolean;
   variants?: { name?: string; image?: string }[];
+  mainImage?: string;
   images?: string[];
   productImage?: string;
   description?: string;
@@ -167,9 +168,10 @@ const ProductSection = () => {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {displayedProducts.map((product) => {
                 const imageUrl =
-                  product.variants?.[0]?.image ||
                   product.images?.[0] ||
                   product.productImage ||
+                  product.mainImage ||
+                  product.variants?.[0]?.image ||
                   "/cards/card1.webp";
 
                 return (

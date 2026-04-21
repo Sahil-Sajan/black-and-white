@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
   ShoppingCart,
@@ -21,12 +21,12 @@ import { Brand } from "@/src/types/brand";
 
 // --- DATA STRUCTURE ---
 const MENU_LINKS = [
-  { id: "new", label: "NEW", href: "/collection" },
+  { id: "new", label: "NEW", href: "/collection?sort=latest" },
   { id: "brands", label: "BRANDS", href: "/collection" },
-  { id: "vape-kits", label: "VAPE KITS", href: "/collection" },
-  { id: "disposables", label: "DISPOSABLES", href: "/collection" },
-  { id: "e-liquids", label: "E-LIQUIDS", href: "/collection" },
-  { id: "accessories", label: "ACCESSORIES", href: "/collection" },
+  { id: "vape-kits", label: "KITS", href: "/collection?category=Kits" },
+  { id: "disposables", label: "DISPOSABLES", href: "/collection?category=Disposable Device" },
+  { id: "e-liquids", label: "E-LIQUIDS", href: "/collection?category=Liquid" },
+  { id: "accessories", label: "ACCESSORIES", href: "/collection?category=Accessories" },
 ];
 
 const BRAND_DATA = {
@@ -48,25 +48,11 @@ const BRAND_DATA = {
 
 const MEGAMENU_CONTENT: Record<string, { name: string; img: string }[]> = {
   brands: [
-    { name: "Geek Bar Pulse X 25K", img: "/cards/card4.jpg" },
-    { name: "VGOD Elite Series", img: "/cards/card1.webp" },
-  ],
-  "vape-kits": [
-    { name: "Uwell Caliburn G3", img: "/cards/card2.webp" },
-    { name: "Vaporesso XROS 4", img: "/cards/card3.jpg" },
-  ],
-  disposables: [
-    { name: "Sour Mango Pineapple 25K", img: "/cards/card4.jpg" },
-    { name: "Blackberry Blueberry 25K", img: "/cards/card5.webp" },
-  ],
-  "e-liquids": [
-    { name: "Vapetasia Killer Kustard", img: "/cards/card5.webp" },
-    { name: "Nasty Juice Cush Man", img: "/cards/card6.webp" },
-  ],
-  accessories: [
-    { name: "Replacement Pods & Coils", img: "/cards/card2.webp" },
-    { name: "External Battery Chargers", img: "/cards/card3.jpg" },
-  ],
+    { name: "Pava Series", img: "/brands/pava.png" },
+    { name: "Voopo Series", img: "/brands/voopo.png" },
+    { name: "Disposable Highs", img: "/brands/image (2).webp" },
+    { name: "Vaporesso Pro", img: "/brands/image (3).webp" },
+  ]
 };
 
 const Navbar = () => {
@@ -74,6 +60,9 @@ const Navbar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentCategory = searchParams.get('category');
+  const currentSort = searchParams.get('sort');
   const router = useRouter();
   const { cartItems } = useCart();
 
@@ -181,7 +170,21 @@ const Navbar = () => {
         {/* Center: Links (Desktop) */}
         <ul className="hidden lg:flex items-center space-x-10 h-full">
           {MENU_LINKS.map((link) => {
-            const isActive = pathname === link.href;
+            let isActive = false;
+
+            if (pathname === '/collection') {
+              if (currentCategory && link.href.includes(`category=${currentCategory}`)) {
+                isActive = true;
+              } else if (currentSort === 'latest' && link.href.includes('sort=latest')) {
+                isActive = true;
+              } else if (link.id === 'brands' && !currentCategory && !currentSort) {
+                // Root collection maps back to brands tab visually 
+                isActive = true;
+              }
+            } else if (pathname === link.href) {
+              isActive = true;
+            }
+
             const isHovered = activeMenu === link.id;
 
             return (
@@ -200,7 +203,7 @@ const Navbar = () => {
                       className={`absolute bottom-0 left-0 h-0.5 bg-gray-400 transition-all duration-300 ease-in-out ${isActive || isHovered ? "w-full opacity-100" : "w-0 opacity-0"}`}
                     />
                   </span>
-                  {link.id !== "new" && (
+                  {link.id === "brands" && (
                     <ChevronDown
                       className={`ml-1.5 transition-transform duration-300 ${isHovered ? "rotate-180 text-gray-400" : "text-zinc-600"}`}
                       size={14}
@@ -385,7 +388,7 @@ const Navbar = () => {
 
       {/* --- DESKTOP MEGAMENU --- */}
       <div
-        className={`hidden lg:block absolute left-0 w-full bg-black transition-all duration-500 ease-in-out border-b border-zinc-900 shadow-2xl z-50 overflow-hidden ${activeMenu && activeMenu !== "new" ? "max-h-150 opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}
+        className={`hidden lg:block absolute left-0 w-full bg-black transition-all duration-500 ease-in-out border-b border-zinc-900 shadow-2xl z-50 overflow-hidden ${activeMenu === "brands" ? "max-h-150 opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}
       >
         <div className="mx-auto max-w-7xl px-8 py-14 grid grid-cols-12 gap-12">
           {/* Columns 1 & 2 (Hardware & E-Liquids) */}
@@ -397,7 +400,7 @@ const Navbar = () => {
               {BRAND_DATA.hardware.map((item) => (
                 <Link
                   key={item}
-                  href="/collection"
+                  href={`/collection?brand=${encodeURIComponent(item)}`}
                   className="text-sm font-bold text-zinc-400 hover:text-white hover:translate-x-2 transition-all duration-200"
                 >
                   {item}
@@ -414,7 +417,7 @@ const Navbar = () => {
               {BRAND_DATA.liquids.map((item) => (
                 <Link
                   key={item}
-                  href="/collection"
+                  href={`/collection?brand=${encodeURIComponent(item)}`}
                   className="text-sm font-bold text-zinc-400 hover:text-white hover:translate-x-2 transition-all duration-200"
                 >
                   {item}
@@ -424,26 +427,25 @@ const Navbar = () => {
           </div>
 
           {/* Column 3: Featured Grid */}
-          <div className="col-span-6 grid grid-cols-2 gap-8">
+          <div className="col-span-6 grid grid-cols-2 gap-4 md:gap-8">
             {currentProducts.map((product, idx) => (
               <Link
                 key={idx}
                 href="/collection"
                 className="group cursor-pointer block"
               >
-                <div className="relative aspect-16/10 w-full overflow-hidden rounded-lg bg-zinc-900 border border-zinc-800">
+                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-[#111] border border-zinc-900 group-hover:border-zinc-700 flex items-center justify-center transition-colors duration-500">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent z-10" />
                   <Image
                     src={product.img}
                     alt={product.name}
                     fill
-                    className="object-contain transition-transform duration-1000 group-hover:scale-110 opacity-80 group-hover:opacity-100"
+                    className="object-contain p-4 transition-all duration-700 group-hover:scale-105 group-hover:drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] z-0"
                   />
                 </div>
-                <div className="mt-6 flex flex-col items-center text-center">
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-2">
-                    Featured Collection
-                  </p>
-                  <p className="text-xs font-black uppercase tracking-[0.2em] text-white group-hover:text-gray-400 transition-colors duration-300">
+                <div className="mt-4 flex flex-col items-center text-center">
+                  <span className="text-[8px] font-black uppercase tracking-[0.4em] text-zinc-600 mb-1">Explore</span>
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-300 group-hover:text-white transition-colors duration-300">
                     {product.name}
                   </p>
                 </div>

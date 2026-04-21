@@ -22,15 +22,20 @@ interface Product {
 export default async function ProductBrowserPage({
   searchParams,
 }: {
-  searchParams: Promise<{ brand?: string; category?: string; search?: string }>;
+  searchParams: Promise<{ brand?: string; category?: string; search?: string; minPrice?: string; maxPrice?: string; sort?: string; capacity?: string; mg?: string }>;
 }) {
-  const { brand, category, search } = await searchParams;
+  const { brand, category, search, minPrice, maxPrice, sort, capacity, mg } = await searchParams;
 
   // Construct API URL with filters
   const params = new URLSearchParams();
   if (brand) params.set("brand", brand);
   if (category) params.set("category", category);
   if (search) params.set("search", search);
+  if (minPrice) params.set("minPrice", minPrice);
+  if (maxPrice) params.set("maxPrice", maxPrice);
+  if (sort) params.set("sort", sort);
+  if (capacity) params.set("capacity", capacity);
+  if (mg) params.set("mg", mg);
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   const apiUrl = `${baseUrl}/api/products${params.toString() ? `?${params.toString()}` : ""}`;
