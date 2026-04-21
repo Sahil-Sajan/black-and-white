@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 import slugify from "slugify";
+import { Brand } from "@/src/types/brand";
 
 export interface IVariant {
   name: string;
@@ -9,7 +10,7 @@ export interface IVariant {
 export interface IProduct extends Document {
   name: string;
   slug: string;
-  brand: string;
+  brand: Brand | string;
   category: string;
   mg: string;
   price: number;
@@ -28,7 +29,7 @@ const ProductSchema = new Schema<IProduct>(
   {
     name: { type: String, required: true },
     slug: { type: String, unique: true },
-    brand: { type: String, required: true },
+    brand: { type: String, required: true, enum: Object.values(Brand) },
     category: { type: String, required: true },
     mg: { type: String, required: false },
     price: { type: Number, required: true },

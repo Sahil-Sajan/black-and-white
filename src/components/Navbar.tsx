@@ -4,12 +4,20 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Search, ShoppingCart, ChevronDown, Menu, X, Loader2 } from "lucide-react";
+import {
+  Search,
+  ShoppingCart,
+  ChevronDown,
+  Menu,
+  X,
+  Loader2,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
 import CartDrawer from "./CartDrawer";
 import { logo } from "./images";
 import { IProduct } from "@/src/models/Product";
+import { Brand } from "@/src/types/brand";
 
 // --- DATA STRUCTURE ---
 const MENU_LINKS = [
@@ -22,27 +30,19 @@ const MENU_LINKS = [
 ];
 
 const BRAND_DATA = {
-  hardware: [
-    "SMOKTech",
-    "Uwell",
-    "VOOPOO",
-    "Vandy Vape",
-    "Geek Vape",
-    "Vaporesso",
-    "YoCan",
-    "Lookah",
-    "FreeMaX",
-    "CCELL",
-  ],
+  hardware: [Brand.OXVA, Brand.VOOPOO, Brand.VAPORESSO, Brand.UWLL, Brand.PAVA],
   liquids: [
-    "Pod Juice",
-    "Four Seasons",
-    "Monster Vape Labs",
-    "7 Daze",
-    "Juice Head",
-    "SKWEZED",
-    "Fifty Bar",
-    "Ruthless Vapor",
+    Brand.DRIP_DOWN,
+    Brand.JUICY_MAX,
+    Brand.OX_PASSION,
+    Brand.BERLIN,
+    Brand.GMC,
+    Brand.VGOD,
+    Brand.FROSTY,
+    Brand.IVG_NIC_SALTS,
+    Brand.KRUSH,
+    Brand.TOKYO,
+    Brand.UDOO_SALTS,
   ],
 };
 
@@ -235,7 +235,9 @@ const Navbar = () => {
               />
               <button
                 type="button"
-                onClick={() => (isSearchOpen ? handleNavSearch() : setIsSearchOpen(true))}
+                onClick={() =>
+                  isSearchOpen ? handleNavSearch() : setIsSearchOpen(true)
+                }
                 className="absolute right-0 text-white hover:text-gray-400 transition-all duration-200 transform hover:scale-110 p-2"
               >
                 {isSearching ? (

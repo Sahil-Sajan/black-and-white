@@ -1,8 +1,16 @@
 "use client";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
+import { logoutAdmin } from "../../lib/actions/auth";
 
 const AdminHeader = () => {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logoutAdmin();
+    router.push('/');
+  };
 
   const getTitle = () => {
     const path = pathname.split("/").pop();
@@ -23,6 +31,14 @@ const AdminHeader = () => {
           Welcome back, Admin.
         </p>
       </div>
+      {/* Right Side: Logout */}
+      <button
+        onClick={handleLogout}
+        className="flex items-center gap-2 px-4 py-2 text-sm font-black text-slate-600 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+      >
+        <LogOut size={18} />
+        <span className="hidden sm:inline">Logout</span>
+      </button>
     </header>
   );
 };

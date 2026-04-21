@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Plus,
   ChevronLeft,
@@ -26,6 +27,7 @@ interface Variant {
 import { BRANDS, CATEGORIES, MG_OPTIONS } from "@/src/lib/data";
 
 export default function AddProductPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     brand: "",
@@ -170,6 +172,11 @@ export default function AddProductPage() {
       setVariants([
         { id: Math.random().toString(36).substr(2, 9), name: "", image: null },
       ]);
+
+      // Redirect after success
+      setTimeout(() => {
+        router.push("/dashboard/products");
+      }, 1500);
     } catch (error: any) {
       console.error(error);
       setMessage({
@@ -276,7 +283,7 @@ export default function AddProductPage() {
                     onChange={handleChange}
                     className="w-full bg-white border border-slate-200 rounded-xl px-5 py-4 text-sm font-bold text-slate-800 focus:border-blue-500 transition-all outline-none appearance-none cursor-pointer"
                   >
-                    <option value="" disabled>
+                    <option value="">
                       Select Brand
                     </option>
                     {BRANDS.map((brand) => (
@@ -299,7 +306,7 @@ export default function AddProductPage() {
                     onChange={handleChange}
                     className="w-full bg-white border border-slate-200 rounded-xl px-5 py-4 text-sm font-bold text-slate-800 focus:border-blue-500 transition-all outline-none appearance-none cursor-pointer"
                   >
-                    <option value="" disabled>
+                    <option value="">
                       Select MG
                     </option>
                     {MG_OPTIONS.map((mg) => (

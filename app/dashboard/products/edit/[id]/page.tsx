@@ -319,7 +319,7 @@ export default function EditProductPage() {
                     onChange={handleChange}
                     className="w-full bg-white border border-slate-200 rounded-xl px-5 py-4 text-sm font-bold text-slate-800 focus:border-blue-500 transition-all outline-none appearance-none cursor-pointer"
                   >
-                    <option value="" disabled>Select Brand</option>
+                    <option value="">Select Brand</option>
                     {BRANDS.map(brand => (
                       <option key={brand} value={brand}>{brand}</option>
                     ))}
@@ -336,7 +336,7 @@ export default function EditProductPage() {
                     onChange={handleChange}
                     className="w-full bg-white border border-slate-200 rounded-xl px-5 py-4 text-sm font-bold text-slate-800 focus:border-blue-500 transition-all outline-none appearance-none cursor-pointer"
                   >
-                    <option value="" disabled>Select MG</option>
+                    <option value="">Select MG</option>
                     {MG_OPTIONS.map(mg => (
                       <option key={mg} value={mg}>{mg}</option>
                     ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { ProductImages } from "./image-gallery";
 import ProductInfo from "./product-info";
 
@@ -25,7 +25,9 @@ interface Product {
 
 export default function ProductDetailView({ product }: { product: Product }) {
   // Focus image (starts with mainImage)
-  const [activeImage, setActiveImage] = useState<string | null>(product.mainImage);
+  const [activeImage, setActiveImage] = useState<string | null>(
+    product.mainImage,
+  );
 
   // Prepare images for thumbnails
   const images = [
@@ -48,10 +50,7 @@ export default function ProductDetailView({ product }: { product: Product }) {
       />
 
       {/* Right: Info */}
-      <ProductInfo 
-        product={product} 
-        onVariantChange={handleVariantChange}
-      />
+      <ProductInfo product={product} onVariantChange={handleVariantChange} />
     </div>
   );
 }
