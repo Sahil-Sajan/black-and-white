@@ -1,6 +1,6 @@
-export const BRANDS = [
-  "Elf Bar", "GeekVape", "Vaporesso", "Voopoo", "Lost Mary", "Smok", "Uwell", "Oxva"
-];
+import { BRAND_LIST } from "@/src/types/brand";
+
+export const BRANDS = BRAND_LIST;
 
 export const CATEGORIES = [
   { value: "DISPOSABLE", label: "Disposable" },
@@ -13,7 +13,12 @@ export const MG_OPTIONS = [
   "0mg",
   "3mg",
   "6mg",
-  "10mg",
+  "12mg",
   "20mg",
-  "50mg"
+  "25mg",
+  "30mg",
+  "35mg",
+  "50mg",
+  "55mg",
+  "60mg"
 ];

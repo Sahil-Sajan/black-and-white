@@ -2,15 +2,38 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { Eye, EyeOff } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { verifyAdminPassword } from '../../src/lib/actions/auth';
 
 export default function AdminLoginPage() {
+    const router = useRouter();
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    // Default password as requested
-    const VALID_PASSWORD = "12345";
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!password) return;
+
+        setIsLoading(true);
+        setError('');
+
+        try {
+            const isValid = await verifyAdminPassword(password);
+            if (isValid) {
+                router.push('/dashboard');
+            } else {
+                setError('Invalid password. Please try again.');
+            }
+        } catch (err) {
+            setError('Something went wrong. Please try again.');
+            console.error('Login error:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen w-full flex bg-[#F3FBF7]">
@@ -38,7 +61,7 @@ export default function AdminLoginPage() {
                         <p className="text-gray-400 mt-2 font-medium">Welcome back! Please enter your details.</p>
                     </div>
 
-                    <div className="space-y-6">
+                    <form onSubmit={handleLogin} className="space-y-6">
                         {/* Password Input */}
                         <div className="space-y-2">
                             <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Password</label>
@@ -48,6 +71,7 @@ export default function AdminLoginPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
+                                    disabled={isLoading}
                                     className="w-full px-6 py-4 rounded-2xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#58B3A3] transition-all"
                                 />
                                 <button
@@ -58,19 +82,27 @@ export default function AdminLoginPage() {
                                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                 </button>
                             </div>
+                            {error && (
+                                <p className="text-red-500 text-xs font-semibold ml-1 animate-pulse">{error}</p>
+                            )}
                         </div>
 
                         {/* Sign In Button */}
-                        <Link
-                            href={password === VALID_PASSWORD ? "/dashboard" : "#"}
-                            className={`block w-full text-center py-4 rounded-2xl font-black uppercase tracking-widest text-white transition-all shadow-lg ${password === VALID_PASSWORD
-                                ? "bg-[#58B3A3] hover:bg-[#48998b] shadow-[#58B3A3]/20"
-                                : "bg-gray-300 cursor-not-allowed"
+                        <button
+                            type="submit"
+                            disabled={!password || isLoading}
+                            className={`block w-full text-center py-4 rounded-2xl font-black uppercase tracking-widest text-white transition-all shadow-lg flex items-center justify-center gap-2 ${!password || isLoading
+                                ? "bg-gray-300 cursor-not-allowed"
+                                : "bg-[#58B3A3] hover:bg-[#48998b] shadow-[#58B3A3]/20"
                                 }`}
                         >
-                            Sign in
-                        </Link>
-                    </div>
+                            {isLoading ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                "Sign in"
+                            )}
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
