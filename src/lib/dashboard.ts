@@ -27,11 +27,26 @@ export async function getDashboardStats() {
     .limit(5)
     .select("orderId firstName lastName totalPrice status createdAt");
 
-  // 6. Recent Products (Top 4)
+  // 6. Top Selling / Recent Products (Top 4)
+  // First, let's get the sales count for each product from non-cancelled orders
+  const salesAggregation = await Order.aggregate([
+    { $match: { status: { $ne: "CANCELLED" } } },
+    { $unwind: "$items" },
+    {
+      $group: {
+        _id: "$items.productId",
+        totalSold: { $sum: "$items.quantity" },
+      },
+    },
+  ]);
+
+  const salesMap = new Map(salesAggregation.map(item => [item._id.toString(), item.totalSold]));
+
+  // Now fetch the 4 most recent products
   const recentProducts = await Product.find()
     .sort({ createdAt: -1 })
     .limit(4)
-    .select("name price variants");
+    .select("name price variants mainImage");
 
   // 6. Monthly Revenue (Last 6 Months)
   const sixMonthsAgo = new Date();
@@ -105,8 +120,8 @@ export async function getDashboardStats() {
     recentProducts: recentProducts.map(product => ({
       name: product.name,
       price: `Rs ${product.price.toFixed(2)}`,
-      imageUrl: product.variants?.[0]?.image || "/cards/card1.webp",
-      sold: 0 // We don't have sales tracking yet, defaulting to 0 or could be mock
+      imageUrl: product.mainImage || product.variants?.[0]?.image || "/cards/card1.webp",
+      sold: salesMap.get(product._id.toString()) || 0
     })),
   };
 }
