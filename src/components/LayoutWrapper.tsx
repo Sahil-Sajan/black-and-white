@@ -4,6 +4,7 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import WhatsAppWidget from './WhatsAppWidget';
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -19,6 +20,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
                 {children}
             </main>
             {!hideNavigation && <Footer />}
+            <WhatsAppWidget />
         </>
     );
 }

@@ -6,7 +6,6 @@ import {
   ChevronDown,
   X,
   Edit2,
-  ChevronDown as ChevronIcon,
 } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import Image from "next/image";
@@ -64,7 +63,7 @@ const CartItems = () => {
                         {item.name}
                       </h3>
                       <p className="text-[14px] font-black text-black mt-1">
-                        ${item.price.toFixed(2)}
+                        Rs.{item.price.toFixed(2)}
                       </p>
                       <button
                         onClick={() => removeFromCart(item.id)}
@@ -96,7 +95,7 @@ const CartItems = () => {
                 </td>
                 <td className="p-6 border-l border-zinc-200 text-right align-middle">
                   <span className="text-[16px] font-black text-black">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    Rs.{(item.price * item.quantity).toFixed(2)}
                   </span>
                 </td>
               </tr>
@@ -105,44 +104,11 @@ const CartItems = () => {
         </table>
       </div>
 
-      {/* Add Note & Shipping Section */}
+      {/* Add Note Section */}
       <div className="p-6 border-t border-zinc-200">
-        <button className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-black mb-8">
+        <button className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-black">
           <Edit2 size={14} /> Add a Note
         </button>
-
-        <div className="space-y-4">
-          <button className="flex items-center justify-between w-full text-[11px] font-black uppercase tracking-widest text-black border-b border-zinc-200 pb-2">
-            Estimate Shipping & Tax <ChevronIcon size={16} />
-          </button>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-black uppercase tracking-wider">
-                Country
-              </label>
-              <select className="border border-zinc-300 p-3 text-xs focus:border-black outline-none transition-colors">
-                <option>United States</option>
-              </select>
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-black uppercase tracking-wider">
-                State
-              </label>
-              <select className="border border-zinc-300 p-3 text-xs focus:border-black outline-none transition-colors">
-                <option>State</option>
-              </select>
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-black uppercase tracking-wider">
-                Zip Code
-              </label>
-              <input
-                type="text"
-                className="border border-zinc-300 p-3 text-xs focus:border-black outline-none transition-colors"
-              />
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
-import { Eye, ShoppingCart, Loader2 } from 'lucide-react';
+import { ShoppingCart, Loader2 } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -31,6 +32,7 @@ const VapesCarousel = () => {
     const [activeTab, setActiveTab] = useState<Category>('Disposable Device');
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const { addToCart } = useCart();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -104,59 +106,54 @@ const VapesCarousel = () => {
                     <Swiper
                         modules={[Navigation, Pagination]}
                         spaceBetween={10}
-                        slidesPerView={1}
+                        slidesPerView={1.2}
                         navigation={{
                             nextEl: '.swiper-button-next-custom',
                             prevEl: '.swiper-button-prev-custom',
                         }}
                         pagination={{ clickable: true, el: '.custom-pagination' }}
                         breakpoints={{
-                            640: { slidesPerView: 2, spaceBetween: 15 },
+                            480: { slidesPerView: 2, spaceBetween: 15 },
                             768: { slidesPerView: 3, spaceBetween: 20 },
                             1024: { slidesPerView: 4, spaceBetween: 20 },
-                            1280: { slidesPerView: 5, spaceBetween: 20 },
+                            1280: { slidesPerView: 5, spaceBetween: 25 },
                         }}
-                        className="pb-12"
+                        className="!pb-14"
                     >
                         {filteredProducts.map((product) => {
                             const imageUrl = product.mainImage || product.variants?.[0]?.image || '/cards/card6.webp';
 
                             return (
-                                <SwiperSlide key={product._id}>
-                                    <div className="bg-white p-2 border border-transparent md:hover:border-gray-100 md:hover:shadow-lg transition-all duration-300 group/card relative rounded-sm h-full flex flex-col">
-                                        <div className="aspect-square mb-3 md:mb-4 relative flex items-center justify-center bg-[#f9f9f9] rounded-sm overflow-hidden">
-                                            <Image
-                                                src={imageUrl}
-                                                alt={product.name}
-                                                fill
-                                                className="object-contain transition-transform duration-500 md:group-hover/card:scale-110 p-4"
-                                            />
-                                            <div className="absolute inset-0 flex items-end justify-center pb-4 translate-y-4 opacity-0 md:group-hover/card:opacity-100 md:group-hover/card:translate-y-0 transition-all duration-300 bg-white/30 backdrop-blur-[2px] z-10">
-                                                <div className="flex gap-2">
-                                                    <Link
-                                                        href={`/collection/${product.slug}`}
-                                                        className="flex items-center gap-1 text-[9px] font-bold text-gray-800 bg-white/90 px-2 py-1.5 rounded-sm shadow-sm hover:bg-black hover:text-white transition-colors"
-                                                    >
-                                                        <Eye size={12} /> View
-                                                    </Link>
-                                                    <button className="flex items-center gap-1 text-[9px] font-bold text-gray-800 bg-white/90 px-2 py-1.5 rounded-sm shadow-sm hover:bg-black hover:text-white transition-colors">
-                                                        <ShoppingCart size={12} /> Add to Cart
-                                                    </button>
-                                                </div>
+                                <SwiperSlide key={product._id} className="h-auto">
+                                    <div className="bg-white p-3 md:p-4 border border-gray-100 hover:shadow-xl transition-all duration-500 relative rounded-sm h-full flex flex-col group/card">
+                                        <Link href={`/collection/${product.slug}`} className="cursor-pointer flex flex-col h-full">
+                                            <div className="aspect-[4/5] sm:aspect-square mb-4 relative flex items-center justify-center bg-gray-50/50 rounded-sm overflow-hidden group-hover/card:bg-white transition-colors duration-500">
+                                                <Image
+                                                    src={imageUrl}
+                                                    alt={product.name}
+                                                    fill
+                                                    className="object-contain transition-transform duration-700 md:group-hover/card:scale-110 p-2 md:p-4"
+                                                />
                                             </div>
-                                        </div>
 
-                                        <div className="mt-2 text-center pb-2">
-                                            <p className="text-[8px] md:text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">{product.brand || product.category || 'VAPE'}</p>
-                                            <Link href={`/collection/${product.slug}`}>
+                                            <div className="mt-2 text-center">
+                                                <p className="text-[8px] md:text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">{product.brand || product.category || 'VAPE'}</p>
                                                 <h3 className="text-[10px] md:text-[11px] font-bold text-gray-800 uppercase leading-tight h-8 mb-2 px-1 hover:text-gray-500 transition-colors">
                                                     {product.name}
                                                 </h3>
-                                            </Link>
-                                            <div className="flex items-baseline justify-center gap-2">
-                                                <span className="text-black font-bold text-xs md:text-sm">Rs.{product.price?.toLocaleString()}</span>
+                                                <div className="flex items-baseline justify-center gap-2 mb-3">
+                                                    <span className="text-black font-bold text-xs md:text-sm">Rs.{product.price?.toLocaleString()}</span>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </Link>
+
+                                        {/* Permanent Add to Cart Button */}
+                                        <button 
+                                            onClick={() => addToCart({ id: product.slug, name: product.name, price: product.price, image: imageUrl, variant: "Standard" })}
+                                            className="w-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest bg-black text-white py-2.5 rounded-sm hover:bg-gray-800 transition-colors mt-auto"
+                                        >
+                                            <ShoppingCart size={14} /> Add to Cart
+                                        </button>
                                     </div>
                                 </SwiperSlide>
                             );
