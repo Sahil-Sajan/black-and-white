@@ -4,14 +4,15 @@ import Image from 'next/image';
 
 const BrandMarquee = () => {
     const row1 = [
-
         '/brands/image (1).webp',
         '/brands/image (2).webp',
         '/brands/image (3).webp',
-
         '/brands/image (7).webp',
         '/brands/image 4.avif',
-        '/brands/image 5.avif',
+        '/brands/image 5.webp',
+        // '/brands/oxva.png',
+        // '/brands/pava.png',
+        // '/brands/voopo.png',
     ];
 
     return (

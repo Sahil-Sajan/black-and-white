@@ -8,9 +8,8 @@ const OrderSummary = () => {
   const { cartTotal, cartItems } = useCart();
   const hasItems = cartItems.length > 0;
 
-  const shipping = hasItems ? 5.0 : 0;
-  const tax = cartTotal * 0.05; // 5% tax estimate
-  const total = cartTotal + shipping + tax;
+  const shipping = hasItems ? 250.0 : 0;
+  const total = cartTotal + shipping;
 
   return (
     <div className="w-full bg-zinc-50 border border-zinc-200">
@@ -21,24 +20,16 @@ const OrderSummary = () => {
       </div>
 
       <div className="p-6">
-        <select className="w-full border border-zinc-300 p-3 text-xs bg-white mb-6 uppercase tracking-wider font-medium outline-none">
-          <option>Featured</option>
-        </select>
-
         <h3 className="text-xl font-black text-black mb-4">Order Summary</h3>
 
         <div className="space-y-3 border-b border-zinc-200 pb-4 mb-4">
           <div className="flex justify-between text-xs font-medium">
             <span className="text-zinc-600">Subtotal:</span>
-            <span className="text-black">${cartTotal.toFixed(2)}</span>
+            <span className="text-black">Rs.{cartTotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-xs font-medium">
-            <span className="text-zinc-600">Estimated Shipping:</span>
-            <span className="text-black">${shipping.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between text-xs font-medium">
-            <span className="text-zinc-600">Estimated Tax:</span>
-            <span className="text-black">${tax.toFixed(2)}</span>
+            <span className="text-zinc-600">Standard Delivery:</span>
+            <span className="text-black">Rs.{shipping.toFixed(2)}</span>
           </div>
         </div>
 
@@ -46,7 +37,7 @@ const OrderSummary = () => {
           <span className="text-xl font-black uppercase tracking-tighter">
             Total:
           </span>
-          <span className="text-2xl font-black">${total.toFixed(2)}</span>
+          <span className="text-2xl font-black">Rs.{total.toFixed(2)}</span>
         </div>
 
         <div className="flex flex-col gap-3">

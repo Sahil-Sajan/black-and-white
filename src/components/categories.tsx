@@ -112,7 +112,7 @@ const ProductSection = () => {
         <div className="col-span-12 md:col-span-8">
           {/* Top Row: 3 Banners */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
-            <Link href="/collection" className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center aspect-[16/9] sm:aspect-auto">
+            <Link href={`/collection?category=Disposable Device`} className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center aspect-[16/9] sm:aspect-auto">
               <img
                 src="/categories/disposible2.jpg"
                 alt="Disposable Vape"
@@ -120,7 +120,7 @@ const ProductSection = () => {
               />
             </Link>
 
-            <Link href="/collection" className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center aspect-[16/9] sm:aspect-auto">
+            <Link href={`/collection?category=Liquid`} className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center aspect-[16/9] sm:aspect-auto">
               <img
                 src="/categories/liquid1.jpg"
                 alt="E-Liquid"
@@ -128,7 +128,7 @@ const ProductSection = () => {
               />
             </Link>
 
-            <Link href="/collection" className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center aspect-[16/9] sm:aspect-auto">
+            <Link href={`/collection?category=Kits`} className="overflow-hidden rounded-sm bg-[#f6f6f6] flex items-center justify-center aspect-[16/9] sm:aspect-auto">
               <img
                 src="/categories/sss.jpg"
                 alt="Starter Kits"
@@ -176,7 +176,7 @@ const ProductSection = () => {
 
                 return (
                   <Link
-                    href={`/product/${product.slug}`}
+                    href={`/collection/${product.slug}`}
                     key={product._id}
                     className="group cursor-pointer"
                   >
@@ -193,10 +193,13 @@ const ProductSection = () => {
                     <h3 className="text-[10px] md:text-[11px] font-bold uppercase mt-1 leading-tight line-clamp-2">
                       {product.name}
                     </h3>
-                    <div className="mt-2 flex flex-wrap items-baseline gap-1">
+                    <div className="mt-2 flex items-center justify-between">
                       <p className="text-black font-bold text-xs md:text-sm">
                         Rs. {product.price.toLocaleString()}
                       </p>
+                      <span className="text-[10px] font-bold uppercase tracking-tighter text-gray-400 group-hover:text-black transition-colors">
+                        View
+                      </span>
                     </div>
                   </Link>
                 );
