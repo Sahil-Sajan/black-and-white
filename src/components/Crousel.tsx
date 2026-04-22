@@ -25,18 +25,18 @@ const HeroSlider = () => {
             {/* --- Swiper Slider --- */}
             <Swiper
                 modules={[Navigation, Pagination, Autoplay, EffectFade]}
-                effect={'fade'} // Variation: Smooth fade instead of slide
+                effect={'fade'}
                 navigation={{
                     prevEl: '.hero-prev',
                     nextEl: '.hero-next',
                 }}
                 pagination={{
                     clickable: true,
-                    dynamicBullets: true, // Variation: Bullets scale based on active slide
+                    dynamicBullets: true,
                 }}
-                autoplay={{ delay: 4000, disableOnInteraction: false }}
+                autoplay={{ delay: 5000, disableOnInteraction: false }}
                 loop={true}
-                className="w-full h-[400px] md:h-[730px]"
+                className="w-full h-[250px] sm:h-[400px] md:h-[600px] lg:h-[730px] xl:h-[800px]"
             >
                 {slides.map((slide) => (
                     <SwiperSlide key={slide.id}>
@@ -53,10 +53,10 @@ const HeroSlider = () => {
                 ))}
 
                 {/* --- Custom Navigation (Glassmorphism Style) --- */}
-                <button className="hero-prev absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/10 p-3 backdrop-blur-md transition-all hover:bg-white/30 opacity-0 group-hover:opacity-100 border border-white/20">
+                <button className="hero-prev absolute left-2 md:left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/10 p-2 md:p-3 backdrop-blur-md transition-all hover:bg-white/30 opacity-0 group-hover:opacity-100 border border-white/20 hidden sm:flex">
                     <ChevronLeft size={24} className="text-white" />
                 </button>
-                <button className="hero-next absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/10 p-3 backdrop-blur-md transition-all hover:bg-white/30 opacity-0 group-hover:opacity-100 border border-white/20">
+                <button className="hero-next absolute right-2 md:right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/10 p-2 md:p-3 backdrop-blur-md transition-all hover:bg-white/30 opacity-0 group-hover:opacity-100 border border-white/20 hidden sm:flex">
                     <ChevronRight size={24} className="text-white" />
                 </button>
             </Swiper>
