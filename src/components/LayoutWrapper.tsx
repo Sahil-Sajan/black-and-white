@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -15,7 +15,11 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
 
     return (
         <>
-            {!hideNavigation && <Navbar />}
+            {!hideNavigation && (
+                <Suspense fallback={<div className="h-20 lg:h-24 bg-black" />}>
+                    <Navbar />
+                </Suspense>
+            )}
             <main className="flex-1">
                 {children}
             </main>
