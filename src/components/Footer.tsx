@@ -74,21 +74,15 @@ const Footer = () => {
                             <Phone className="shrink-0 mt-0.5" size={16} />
                             <div>
                                 <p className="font-bold text-white mb-1">Call Us</p>
-                                <p>+1 (800) 123-4567</p>
+                                <a href="tel:03444333374" className="block hover:text-white transition-colors">Hassan: 03444333374</a>
+                                <a href="tel:03049477198" className="block hover:text-white transition-colors">Bilal: 03049477198</a>
                             </div>
                         </li>
                         <li className="flex items-start gap-3 text-sm text-zinc-400">
                             <Mail className="shrink-0 mt-0.5" size={16} />
                             <div>
                                 <p className="font-bold text-white mb-1">Email</p>
-                                <p>support@blackwhitevapors.com</p>
-                            </div>
-                        </li>
-                        <li className="flex items-start gap-3 text-sm text-zinc-400">
-                            <HelpCircle className="shrink-0 mt-0.5" size={16} />
-                            <div>
-                                <Link href="#" className="font-bold text-white mb-1 hover:underline">FAQ & Help Center</Link>
-                                <p>Find answers quickly</p>
+                                <a href="mailto:blackandwhitevapors@gmail.com" className="hover:text-white transition-colors">blackandwhitevapors@gmail.com</a>
                             </div>
                         </li>
                     </ul>
@@ -129,8 +123,8 @@ const Footer = () => {
                     &copy; {new Date().getFullYear()} Black & White Vapors. All Rights Reserved.
                 </p>
                 <div className="flex items-center gap-6">
-                    <Link href="#" className="text-[11px] font-bold text-zinc-500 hover:text-white uppercase tracking-widest transition-colors">Privacy Policy</Link>
-                    <Link href="#" className="text-[11px] font-bold text-zinc-500 hover:text-white uppercase tracking-widest transition-colors">Terms of Service</Link>
+                    <Link href="/privacy-policy" className="text-[11px] font-bold text-zinc-500 hover:text-white uppercase tracking-widest transition-colors">Privacy Policy</Link>
+                    <Link href="/terms-of-service" className="text-[11px] font-bold text-zinc-500 hover:text-white uppercase tracking-widest transition-colors">Terms of Service</Link>
                 </div>
             </div>
         </footer>

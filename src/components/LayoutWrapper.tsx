@@ -24,7 +24,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
                 {children}
             </main>
             {!hideNavigation && <Footer />}
-            <WhatsAppWidget />
+            {!hideNavigation && <WhatsAppWidget />}
         </>
     );
 }
